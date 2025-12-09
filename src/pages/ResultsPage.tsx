@@ -8,8 +8,9 @@ import { ActionPlan } from "@/components/results/ActionPlan";
 import { BookingCTA } from "@/components/results/BookingCTA";
 import { EmailNotice } from "@/components/results/EmailNotice";
 import { Footer } from "@/components/landing/Footer";
-import { Music, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import bleLogoIcon from "@/assets/ble-logo-icon.png";
 
 const ResultsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -40,7 +41,7 @@ const ResultsPage = () => {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="text-center space-y-4">
-          <Music className="h-12 w-12 text-muted-foreground mx-auto" />
+          <img src={bleLogoIcon} alt="" className="h-12 w-12 mx-auto" />
           <h1 className="text-2xl font-bold text-foreground">Results Not Found</h1>
           <p className="text-muted-foreground">
             We couldn't find these results. They may have expired or the link is incorrect.
@@ -61,7 +62,7 @@ const ResultsPage = () => {
       {/* Header */}
       <header className="py-6 px-4 border-b border-border bg-card">
         <div className="max-w-2xl mx-auto flex items-center justify-center gap-2">
-          <Music className="h-6 w-6 text-primary" />
+          <img src={bleLogoIcon} alt="" className="h-6 w-6" />
           <span className="font-bold text-foreground">Music Readiness Score</span>
         </div>
       </header>
