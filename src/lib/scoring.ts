@@ -1,19 +1,31 @@
 export interface QuizAnswers {
-  childName: string;
-  childAge: number;
-  priorExperience: string;
-  focusDuration: string;
-  energyLevel: string;
-  challengeResponse: string;
-  personalityStyle: string;
-  interests: string[];
-  favoriteMusic: string;
-  instrumentsAtHome: string[];
-  practiceDaysPerWeek: string;
+  // Lead capture fields
   parentName: string;
   email: string;
+  childName: string;
   phone: string;
-  cityOrZip: string;
+
+  // Musical aptitude questions
+  pitch: string;
+  rhythm: string;
+  memory: string;
+  emotionalResponse: string;
+
+  // Musical behavior questions
+  hummingSinging: string;
+  rhythmPlay: string;
+  dancing: string;
+  drawnToInstruments: string;
+
+  // Personality questions
+  handlesCorrection: string;
+  performerStyle: string;
+  focusDuration: string;
+
+  // Motivation & environment
+  wantsToLearn: string;
+  favoriteSongBehavior: string;
+  instrumentsAtHome: string[];
 }
 
 export interface ScoringResult {
@@ -28,63 +40,181 @@ export interface ScoringResult {
 export function calculateReadinessScore(answers: QuizAnswers): ScoringResult {
   let score = 50;
 
-  // Age scoring
-  const age = answers.childAge;
-  if (age >= 4 && age <= 5) {
-    score += 0;
-  } else if (age >= 6 && age <= 8) {
-    score += 10;
-  } else if (age >= 9 && age <= 14) {
-    score += 15;
+  // Pitch (Q2) - heavy weight
+  switch (answers.pitch) {
+    case 'yes-on-tune':
+      score += 12;
+      break;
+    case 'sometimes':
+      score += 6;
+      break;
+    case 'not-really':
+      score += 3;
+      break;
   }
 
-  // Focus duration scoring
-  switch (answers.focusDuration) {
-    case 'less-than-5':
-      score -= 10;
+  // Rhythm (Q3) - heavy weight
+  switch (answers.rhythm) {
+    case 'yes':
+      score += 12;
       break;
-    case '5-10':
-      score += 0;
+    case 'sometimes':
+      score += 6;
       break;
-    case '10-20':
+    case 'not-yet':
+      score += 2;
+      break;
+  }
+
+  // Memory (Q4) - heavy weight
+  switch (answers.memory) {
+    case 'yes':
       score += 10;
       break;
-    case '20-plus':
-      score += 15;
+    case 'sometimes':
+      score += 5;
+      break;
+    case 'not-really':
+      score += 2;
       break;
   }
 
-  // Challenge response scoring
-  switch (answers.challengeResponse) {
-    case 'discouraged':
-      score -= 5;
+  // Emotional response (Q5) - heavy weight
+  switch (answers.emotionalResponse) {
+    case 'yes':
+      score += 8;
+      break;
+    case 'sometimes':
+      score += 4;
+      break;
+    case 'not-noticed':
+      score += 1;
+      break;
+  }
+
+  // Humming/Singing (Q6) - medium weight
+  switch (answers.hummingSinging) {
+    case 'all-the-time':
+      score += 8;
+      break;
+    case 'sometimes':
+      score += 4;
+      break;
+    case 'rarely':
+      score += 1;
+      break;
+  }
+
+  // Rhythm play (Q7) - medium weight
+  switch (answers.rhythmPlay) {
+    case 'constantly':
+      score += 8;
+      break;
+    case 'sometimes':
+      score += 4;
+      break;
+    case 'rarely':
+      score += 1;
+      break;
+  }
+
+  // Dancing (Q8) - medium weight
+  switch (answers.dancing) {
+    case 'yes':
+      score += 6;
+      break;
+    case 'sometimes':
+      score += 3;
+      break;
+    case 'no':
+      score += 1;
+      break;
+  }
+
+  // Drawn to instruments (Q9) - medium weight
+  switch (answers.drawnToInstruments) {
+    case 'yes':
+      score += 6;
+      break;
+    case 'sometimes':
+      score += 3;
+      break;
+    case 'not-really':
+      score += 1;
+      break;
+  }
+
+  // Handles correction (Q10) - light weight
+  switch (answers.handlesCorrection) {
+    case 'jumps-in':
+      score += 8;
       break;
     case 'needs-encouragement':
       score += 5;
       break;
-    case 'loves-challenge':
-      score += 10;
+    case 'frustrated':
+      score += 2;
       break;
   }
 
-  // Practice days scoring
-  switch (answers.practiceDaysPerWeek) {
-    case '1-2':
-      score -= 5;
+  // Performer style (Q11) - light weight
+  switch (answers.performerStyle) {
+    case 'loves-showing':
+      score += 6;
       break;
-    case '3-4':
+    case 'shy-but-tries':
+      score += 4;
+      break;
+    case 'nervous':
+      score += 2;
+      break;
+  }
+
+  // Focus duration (Q12) - light weight
+  switch (answers.focusDuration) {
+    case '20-plus':
+      score += 10;
+      break;
+    case '10-20':
+      score += 6;
+      break;
+    case '5-10':
+      score += 3;
+      break;
+    case 'under-5':
+      score += 0;
+      break;
+  }
+
+  // Motivation - wants to learn (Q13) - light weight
+  switch (answers.wantsToLearn) {
+    case 'yes':
       score += 5;
       break;
-    case '5-plus':
-      score += 10;
+    case 'not-yet':
+      score += 2;
+      break;
+    case 'no':
+      score += 0;
       break;
   }
 
-  // Prior experience bonus
-  if (answers.priorExperience === 'yes-6-plus') {
-    score += 5;
-  } else if (answers.priorExperience === 'little') {
-    score += 2;
+  // Favorite song behavior (Q14) - light weight
+  switch (answers.favoriteSongBehavior) {
+    case 'yes':
+      score += 4;
+      break;
+    case 'sometimes':
+      score += 2;
+      break;
+    case 'rarely':
+      score += 0;
+      break;
+  }
+
+  // Instruments at home (Q15) - light weight
+  if (answers.instrumentsAtHome.length > 0 && !answers.instrumentsAtHome.includes('not-yet')) {
+    score += 3;
   }
 
   // Clamp score
@@ -123,88 +253,68 @@ export function calculateReadinessScore(answers: QuizAnswers): ScoringResult {
 }
 
 function recommendInstruments(answers: QuizAnswers): { primaryInstrument: string; secondaryInstruments: string[] } {
-  const interests = answers.interests;
-  const age = answers.childAge;
-  const energy = answers.energyLevel;
-  const personality = answers.personalityStyle;
-  const focus = answers.focusDuration;
-
-  // Priority map for instruments
   const instrumentScores: Record<string, number> = {
-    piano: 0,
+    piano: 10,
     guitar: 0,
     drums: 0,
     voice: 0,
     ukulele: 0,
   };
 
-  // Explicit interest selection (highest priority)
-  if (interests.includes('piano-keyboard')) instrumentScores.piano += 30;
-  if (interests.includes('guitar-ukulele')) {
-    instrumentScores.guitar += 25;
-    instrumentScores.ukulele += 20;
-  }
-  if (interests.includes('drums')) instrumentScores.drums += 30;
-  if (interests.includes('singing')) instrumentScores.voice += 30;
-  if (interests.includes('songwriting')) {
-    instrumentScores.piano += 15;
-    instrumentScores.guitar += 10;
-  }
-
-  // Energy level influence
-  if (energy === 'high-energy') {
-    instrumentScores.drums += 15;
-    instrumentScores.guitar += 10;
-  } else if (energy === 'calm') {
+  // Strong pitch and emotional response → voice priority
+  if (answers.pitch === 'yes-on-tune') {
+    instrumentScores.voice += 20;
     instrumentScores.piano += 10;
-    instrumentScores.voice += 5;
   }
-
-  // Age considerations
-  if (age <= 6) {
-    instrumentScores.piano += 10;
-    instrumentScores.ukulele += 10;
-    if (focus === 'less-than-5' || focus === '5-10') {
-      instrumentScores.drums += 8;
-      instrumentScores.piano += 5;
-    }
-  }
-
-  // Personality influence
-  if (personality === 'creative') {
-    instrumentScores.piano += 8;
-    instrumentScores.guitar += 8;
-  } else if (personality === 'follows-directions') {
+  if (answers.emotionalResponse === 'yes') {
+    instrumentScores.voice += 10;
     instrumentScores.piano += 5;
   }
 
-  // Music preference influence
-  switch (answers.favoriteMusic) {
-    case 'disney-pop':
-      instrumentScores.voice += 10;
-      instrumentScores.piano += 8;
-      break;
-    case 'rock-band':
-      instrumentScores.guitar += 12;
-      instrumentScores.drums += 10;
-      break;
-    case 'classical':
-      instrumentScores.piano += 15;
-      break;
-    case 'video-game':
-      instrumentScores.piano += 10;
-      instrumentScores.guitar += 5;
-      break;
+  // Rhythm play and dancing → drums priority
+  if (answers.rhythmPlay === 'constantly') {
+    instrumentScores.drums += 20;
+    instrumentScores.guitar += 8;
+  }
+  if (answers.dancing === 'yes') {
+    instrumentScores.drums += 15;
+  }
+
+  // Humming/singing → voice
+  if (answers.hummingSinging === 'all-the-time') {
+    instrumentScores.voice += 15;
+  }
+
+  // Drawn to instruments + wants to learn → piano as safe starting point
+  if (answers.drawnToInstruments === 'yes') {
+    instrumentScores.piano += 10;
+    instrumentScores.guitar += 8;
+  }
+  if (answers.wantsToLearn === 'yes') {
+    instrumentScores.piano += 8;
+  }
+
+  // Low focus → piano or drums (short, playful lessons)
+  if (answers.focusDuration === 'under-5' || answers.focusDuration === '5-10') {
+    instrumentScores.drums += 10;
+    instrumentScores.piano += 5;
+    instrumentScores.ukulele += 8;
+  }
+
+  // Performer style
+  if (answers.performerStyle === 'loves-showing') {
+    instrumentScores.voice += 10;
+    instrumentScores.guitar += 5;
   }
 
   // Instruments at home bonus
   answers.instrumentsAtHome.forEach(inst => {
-    if (inst === 'piano-keyboard') instrumentScores.piano += 10;
+    if (inst === 'keyboard-piano') instrumentScores.piano += 15;
     if (inst === 'guitar-ukulele') {
-      instrumentScores.guitar += 10;
-      instrumentScores.ukulele += 10;
+      instrumentScores.guitar += 15;
+      instrumentScores.ukulele += 15;
     }
-    if (inst === 'drums') instrumentScores.drums += 10;
+    if (inst === 'drums') instrumentScores.drums += 15;
   });
 
   // Sort and pick
@@ -236,17 +346,8 @@ export function generateActionPlan(answers: QuizAnswers, result: ScoringResult):
   // Universal action
   plan.push("Pick one performance video on YouTube and watch it together. Ask what they liked about it.");
 
-  // Based on practice commitment
-  if (answers.practiceDaysPerWeek === '1-2') {
-    plan.push("Choose just 2 days this week for 'music time' — even if it's just 5–10 minutes.");
-  } else if (answers.practiceDaysPerWeek === '3-4') {
-    plan.push("Set up a simple practice routine: same time, same place, for 10-15 minutes.");
-  } else {
-    plan.push("Create a mini practice chart and let them put a sticker after each session.");
-  }
-
   // Based on instruments at home
-  if (answers.instrumentsAtHome.length > 0 && !answers.instrumentsAtHome.includes('none')) {
+  if (answers.instrumentsAtHome.length > 0 && !answers.instrumentsAtHome.includes('not-yet')) {
     plan.push(`Let your child explore the ${primaryInstrument.toLowerCase()} with no pressure. Ask them to show you their favorite sound.`);
   } else {
     plan.push("Use a simple rhythm game: clap or tap along to a favorite song together.");
@@ -266,8 +367,23 @@ export function generateActionPlan(answers: QuizAnswers, result: ScoringResult):
   }
 
   // Based on focus duration
-  if (answers.focusDuration === 'less-than-5') {
+  if (answers.focusDuration === 'under-5') {
     plan.push("Keep any music activity under 5 minutes this week. Short wins build momentum.");
+  }
+
+  // Based on wants to learn
+  if (answers.wantsToLearn === 'yes') {
+    plan.push("Since they've expressed interest, ask what instrument or song sparked that curiosity.");
+  }
+
+  // Based on performer style
+  if (answers.performerStyle === 'nervous') {
+    plan.push("Create a safe space for musical play — no audience, no pressure, just exploration.");
+  }
+
+  // Based on drawn to instruments
+  if (answers.drawnToInstruments === 'yes') {
+    plan.push("Next time you see an instrument in public, let them explore it for a few minutes.");
   }
 
   return plan.slice(0, 6);
