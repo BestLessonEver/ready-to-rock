@@ -105,25 +105,32 @@ export function QuizForm() {
 
   const generateAIActionPlan = async (submission: Submission): Promise<string[] | null> => {
     try {
-      console.log("Generating AI action plan...");
       const context = getActionPlanContext(submission);
+      console.log("Sending to AI action plan:", JSON.stringify(context));
+      
       const { data, error } = await supabase.functions.invoke("generate-action-plan", {
         body: context,
       });
       
       if (error) {
-        console.error("Error generating AI action plan:", error);
+        console.error("Edge function error:", error);
+        return null;
+      }
+      
+      if (data?.error) {
+        console.error("AI generation error:", data.error);
         return null;
       }
       
       if (data?.actionPlan && Array.isArray(data.actionPlan)) {
-        console.log("AI action plan generated successfully");
+        console.log("AI action plan generated:", data.actionPlan);
         return data.actionPlan;
       }
       
+      console.warn("Unexpected AI response format:", data);
       return null;
     } catch (err) {
-      console.error("Failed to generate AI action plan:", err);
+      console.error("Failed to call AI edge function:", err);
       return null;
     }
   };
