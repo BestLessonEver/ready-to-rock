@@ -23,7 +23,6 @@ export interface QuizAnswers {
 
   // Motivation & environment
   wantsToLearn: string;
-  favoriteSongBehavior: string;
   instrumentsAtHome: string[];
 }
 
@@ -185,20 +184,7 @@ export function calculateReadinessScore(answers: QuizAnswers): ScoringResult {
       break;
   }
 
-  // Favorite song behavior (Q14) - light weight
-  switch (answers.favoriteSongBehavior) {
-    case 'yes':
-      score += 4;
-      break;
-    case 'sometimes':
-      score += 2;
-      break;
-    case 'rarely':
-      score += 0;
-      break;
-  }
-
-  // Instruments at home (Q15) - light weight
+  // Instruments at home (Q14) - light weight
   if (answers.instrumentsAtHome.length > 0 && !answers.instrumentsAtHome.includes('not-yet')) {
     score += 3;
   }
