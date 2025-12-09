@@ -11,7 +11,7 @@ import { saveSubmission } from "@/lib/storage";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 
-const TOTAL_STEPS = 17;
+const TOTAL_STEPS = 16;
 
 const initialAnswers: QuizAnswers = {
   parentName: "",
@@ -26,7 +26,6 @@ const initialAnswers: QuizAnswers = {
   rhythmPlay: "",
   dancing: "",
   drawnToInstruments: "",
-  handlesCorrection: "",
   performerStyle: "",
   focusDuration: "",
   wantsToLearn: "",
@@ -75,13 +74,12 @@ export function QuizForm() {
       case 8: return answers.rhythmPlay !== "";
       case 9: return answers.dancing !== "";
       case 10: return answers.drawnToInstruments !== "";
-      case 11: return answers.handlesCorrection !== "";
-      case 12: return answers.performerStyle !== "";
-      case 13: return answers.focusDuration !== "";
-      case 14: return answers.wantsToLearn !== "";
-      case 15: return answers.favoriteSongBehavior !== "";
-      case 16: return answers.instrumentsAtHome.length > 0;
-      case 17: return answers.childName.trim() !== "";
+      case 11: return answers.performerStyle !== "";
+      case 12: return answers.focusDuration !== "";
+      case 13: return answers.wantsToLearn !== "";
+      case 14: return answers.favoriteSongBehavior !== "";
+      case 15: return answers.instrumentsAtHome.length > 0;
+      case 16: return answers.childName.trim() !== "";
       default: return false;
     }
   };
@@ -396,35 +394,9 @@ export function QuizForm() {
           </QuizCard>
         )}
 
-        {/* Screen 11: Handles Correction */}
+        {/* Screen 11: Performer Style */}
         {step === 11 && (
           <QuizCard key="step11">
-            <QuizCardTitle subtitle="Personality">
-              How does your child handle trying something new?
-            </QuizCardTitle>
-            <div className="space-y-2">
-              <OptionButton
-                label="Jumps right in and experiments"
-                selected={answers.handlesCorrection === "jumps-in"}
-                onClick={() => selectAndAdvance("handlesCorrection", "jumps-in")}
-              />
-              <OptionButton
-                label="Tries but needs encouragement"
-                selected={answers.handlesCorrection === "needs-encouragement"}
-                onClick={() => selectAndAdvance("handlesCorrection", "needs-encouragement")}
-              />
-              <OptionButton
-                label="Gets frustrated easily"
-                selected={answers.handlesCorrection === "frustrated"}
-                onClick={() => selectAndAdvance("handlesCorrection", "frustrated")}
-              />
-            </div>
-          </QuizCard>
-        )}
-
-        {/* Screen 12: Performer Style */}
-        {step === 12 && (
-          <QuizCard key="step12">
             <QuizCardTitle subtitle="Personality">
               How does your child feel about performing or showing what they learned?
             </QuizCardTitle>
@@ -448,9 +420,9 @@ export function QuizForm() {
           </QuizCard>
         )}
 
-        {/* Screen 13: Focus Duration */}
-        {step === 13 && (
-          <QuizCard key="step13">
+        {/* Screen 12: Focus Duration */}
+        {step === 12 && (
+          <QuizCard key="step12">
             <QuizCardTitle subtitle="Personality">
               How long can your child focus on something they enjoy?
             </QuizCardTitle>
@@ -479,9 +451,9 @@ export function QuizForm() {
           </QuizCard>
         )}
 
-        {/* Screen 14: Wants to Learn */}
-        {step === 14 && (
-          <QuizCard key="step14">
+        {/* Screen 13: Wants to Learn */}
+        {step === 13 && (
+          <QuizCard key="step13">
             <QuizCardTitle subtitle="Motivation">
               Has your child ever said they want to learn an instrument?
             </QuizCardTitle>
@@ -505,9 +477,9 @@ export function QuizForm() {
           </QuizCard>
         )}
 
-        {/* Screen 15: Favorite Song Behavior */}
-        {step === 15 && (
-          <QuizCard key="step15">
+        {/* Screen 14: Favorite Song Behavior */}
+        {step === 14 && (
+          <QuizCard key="step14">
             <QuizCardTitle subtitle="Motivation">
               Does your child ask you to replay songs they love?
             </QuizCardTitle>
@@ -531,9 +503,9 @@ export function QuizForm() {
           </QuizCard>
         )}
 
-        {/* Screen 16: Instruments at Home */}
-        {step === 16 && (
-          <QuizCard key="step16">
+        {/* Screen 15: Instruments at Home */}
+        {step === 15 && (
+          <QuizCard key="step15">
             <QuizCardTitle subtitle="Environment">
               Do you have any instruments at home?
             </QuizCardTitle>
@@ -572,9 +544,9 @@ export function QuizForm() {
           </QuizCard>
         )}
 
-        {/* Screen 17: Final Lead Capture */}
-        {step === 17 && (
-          <QuizCard key="step17">
+        {/* Screen 16: Final Lead Capture */}
+        {step === 16 && (
+          <QuizCard key="step16">
             <QuizCardTitle subtitle="Almost done!">
               What's your child's name?
             </QuizCardTitle>
