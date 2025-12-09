@@ -145,7 +145,7 @@ export function QuizForm() {
         {/* Screen 1: Parent Name */}
         {step === 1 && (
           <QuizCard key="step1">
-            <QuizCardTitle subtitle="Let's get started">
+            <QuizCardTitle>
               What's your name?
             </QuizCardTitle>
             <div className="space-y-2">
