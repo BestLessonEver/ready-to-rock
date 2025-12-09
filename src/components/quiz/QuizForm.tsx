@@ -160,7 +160,6 @@ export function QuizForm() {
                 value={answers.parentName}
                 onChange={e => updateAnswer("parentName", e.target.value)}
                 className="h-12"
-                autoFocus
               />
             </div>
           </QuizCard>
