@@ -29,17 +29,16 @@ const instrumentInfo: Record<string, { emoji: string; description: string }> = {
 };
 
 export function InstrumentMatch({ submission }: InstrumentMatchProps) {
-  const { primaryInstrument, secondaryInstruments, childName, interests } = submission;
+  const { primaryInstrument, secondaryInstruments, childName, hummingSinging, rhythmPlay, dancing, emotionalResponse } = submission;
   const info = instrumentInfo[primaryInstrument] || instrumentInfo.Piano;
 
-  // Build personalized explanation
+  // Build personalized explanation based on new quiz fields
   const getInterestText = () => {
-    if (interests.includes('singing')) return 'love for singing';
-    if (interests.includes('piano-keyboard')) return 'interest in piano';
-    if (interests.includes('guitar-ukulele')) return 'interest in guitar';
-    if (interests.includes('drums')) return 'interest in drums';
-    if (interests.includes('songwriting')) return 'creative side';
-    return 'musical interests';
+    if (hummingSinging === 'all-the-time') return 'love for singing and making music';
+    if (rhythmPlay === 'constantly') return 'natural sense of rhythm';
+    if (dancing === 'yes') return 'love for moving to music';
+    if (emotionalResponse === 'yes') return 'deep connection to music';
+    return 'musical potential';
   };
 
   return (
