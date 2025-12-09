@@ -38,7 +38,7 @@ export function Hero({
         {/* Subheadline */}
         <p className="text-lg sm:text-xl text-muted-foreground max-w-xl mx-auto animate-slide-up" style={{
         animationDelay: '0.1s'
-      }}>Finish this quiz to get a personalized Music Readiness Score, Best-Fit Instrument, and a 1 Week Action Plan.</p>
+      }}>Finish this quiz to get a personalized Music Readiness Score, Best-Fit Instrument, and 1-Week Action Plan.</p>
 
         {/* CTA Button */}
         <div className="pt-4 animate-slide-up" style={{
