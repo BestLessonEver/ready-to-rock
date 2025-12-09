@@ -1,1 +1,4 @@
 project_id = "ddzzdwzxpssittevvpdi"
+
+[functions.send-quiz-emails]
+verify_jwt = false

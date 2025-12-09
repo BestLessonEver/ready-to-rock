@@ -6,8 +6,9 @@ import { OptionButton } from "./OptionButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { QuizAnswers, createSubmission } from "@/lib/scoring";
+import { QuizAnswers, createSubmission, Submission } from "@/lib/scoring";
 import { saveSubmission } from "@/lib/storage";
+import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 
 const TOTAL_STEPS = 17;
@@ -90,6 +91,22 @@ export function QuizForm() {
     return re.test(email);
   };
 
+  const sendQuizEmails = async (submission: Submission) => {
+    try {
+      console.log("Sending quiz emails...");
+      const { error } = await supabase.functions.invoke("send-quiz-emails", {
+        body: submission,
+      });
+      if (error) {
+        console.error("Error sending emails:", error);
+      } else {
+        console.log("Emails sent successfully");
+      }
+    } catch (err) {
+      console.error("Failed to send emails:", err);
+    }
+  };
+
   const handleSubmit = async () => {
     if (answers.childName.trim() === "") {
       setErrors({ childName: "Please enter your child's name" });
@@ -101,6 +118,9 @@ export function QuizForm() {
     
     const submission = createSubmission(answers);
     saveSubmission(submission);
+    
+    // Fire-and-forget: send emails without blocking navigation
+    sendQuizEmails(submission);
     
     navigate(`/results/${submission.id}`);
   };
