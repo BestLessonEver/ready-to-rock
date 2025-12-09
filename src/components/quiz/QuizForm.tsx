@@ -11,7 +11,7 @@ import { saveSubmission } from "@/lib/storage";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 
-const TOTAL_STEPS = 16;
+const TOTAL_STEPS = 15;
 
 const initialAnswers: QuizAnswers = {
   parentName: "",
@@ -29,7 +29,6 @@ const initialAnswers: QuizAnswers = {
   performerStyle: "",
   focusDuration: "",
   wantsToLearn: "",
-  favoriteSongBehavior: "",
   instrumentsAtHome: [],
 };
 
@@ -77,9 +76,8 @@ export function QuizForm() {
       case 11: return answers.performerStyle !== "";
       case 12: return answers.focusDuration !== "";
       case 13: return answers.wantsToLearn !== "";
-      case 14: return answers.favoriteSongBehavior !== "";
-      case 15: return answers.instrumentsAtHome.length > 0;
-      case 16: return answers.childName.trim() !== "";
+      case 14: return answers.instrumentsAtHome.length > 0;
+      case 15: return answers.childName.trim() !== "";
       default: return false;
     }
   };
@@ -477,35 +475,9 @@ export function QuizForm() {
           </QuizCard>
         )}
 
-        {/* Screen 14: Favorite Song Behavior */}
+        {/* Screen 14: Instruments at Home */}
         {step === 14 && (
           <QuizCard key="step14">
-            <QuizCardTitle subtitle="Motivation">
-              Does your child ask you to replay songs they love?
-            </QuizCardTitle>
-            <div className="space-y-2">
-              <OptionButton
-                label="Yes"
-                selected={answers.favoriteSongBehavior === "yes"}
-                onClick={() => selectAndAdvance("favoriteSongBehavior", "yes")}
-              />
-              <OptionButton
-                label="Sometimes"
-                selected={answers.favoriteSongBehavior === "sometimes"}
-                onClick={() => selectAndAdvance("favoriteSongBehavior", "sometimes")}
-              />
-              <OptionButton
-                label="Rarely"
-                selected={answers.favoriteSongBehavior === "rarely"}
-                onClick={() => selectAndAdvance("favoriteSongBehavior", "rarely")}
-              />
-            </div>
-          </QuizCard>
-        )}
-
-        {/* Screen 15: Instruments at Home */}
-        {step === 15 && (
-          <QuizCard key="step15">
             <QuizCardTitle subtitle="Environment">
               Do you have any instruments at home?
             </QuizCardTitle>
@@ -544,9 +516,9 @@ export function QuizForm() {
           </QuizCard>
         )}
 
-        {/* Screen 16: Final Lead Capture */}
-        {step === 16 && (
-          <QuizCard key="step16">
+        {/* Screen 15: Final Lead Capture */}
+        {step === 15 && (
+          <QuizCard key="step15">
             <QuizCardTitle subtitle="Almost done!">
               What's your child's name?
             </QuizCardTitle>
