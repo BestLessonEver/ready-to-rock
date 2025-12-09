@@ -50,10 +50,8 @@ export function Hero({
         </div>
 
         {/* Trust line */}
-        <p className="text-sm text-muted-foreground animate-fade-in" style={{
-        animationDelay: '0.4s'
-      }}>Created by Best Lesson Ever, a modern, student-focused music school in Friendswood, TX.<span className="font-semibold text-foreground">Best Lesson Ever</span>, 
-          a modern, student-led music school in Friendswood, TX.
+        <p className="text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: '0.4s' }}>
+          Created by <span className="font-semibold text-foreground">Best Lesson Ever</span>, a modern, student-focused music school in Friendswood, TX.
         </p>
       </div>
     </section>;
