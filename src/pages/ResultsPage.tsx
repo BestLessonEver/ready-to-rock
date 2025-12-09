@@ -17,6 +17,10 @@ const ResultsPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     if (id) {
       const data = getSubmission(id);
       setSubmission(data);
