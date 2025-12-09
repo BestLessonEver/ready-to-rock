@@ -311,52 +311,30 @@ function recommendInstruments(answers: QuizAnswers): { primaryInstrument: string
   };
 }
 
+// Fallback action plan if AI fails
 export function generateActionPlan(answers: QuizAnswers, result: ScoringResult): string[] {
   const plan: string[] = [];
   const { band, primaryInstrument } = result;
+  const childName = answers.childName || 'your child';
 
-  // Universal action
+  plan.push(`Ask ${childName} which instrument they think looks the coolest — their answer might surprise you.`);
   plan.push("Pick one performance video on YouTube and watch it together. Ask what they liked about it.");
 
-  // Based on instruments at home
   if (answers.instrumentsAtHome.length > 0 && !answers.instrumentsAtHome.includes('not-yet')) {
-    plan.push(`Let your child explore the ${primaryInstrument.toLowerCase()} with no pressure. Ask them to show you their favorite sound.`);
+    plan.push(`Let ${childName} explore the ${primaryInstrument.toLowerCase()} at home with no pressure. Ask them to show you their favorite sound.`);
   } else {
     plan.push("Use a simple rhythm game: clap or tap along to a favorite song together.");
-    plan.push("Look up 'beginner keyboard app' or 'rhythm games for kids' — free apps can spark interest.");
   }
 
-  // Based on band
   if (band === 'emerging') {
     plan.push("Focus on fun over structure. Dance parties, singing in the car, or tapping on pots all count.");
-    plan.push("Ask your child to 'teach' you a song they know — even if it's made up!");
   } else if (band === 'ready-with-support') {
-    plan.push("Talk about what kind of teacher personality might click with your child (silly? calm? energetic?).");
-    plan.push("Set a small goal together: 'By next month, let's learn one simple song.'");
+    plan.push(`Talk about what kind of teacher personality might click with ${childName} (silly? calm? energetic?).`);
   } else {
-    plan.push("Research local options and book a trial lesson to see how they respond to real instruction.");
-    plan.push("Ask your child what they'd like to learn to play — ownership boosts motivation.");
+    plan.push(`Research local options and book a trial lesson to see how ${childName} responds to real instruction.`);
   }
 
-  // Based on focus duration
-  if (answers.focusDuration === 'under-5') {
-    plan.push("Keep any music activity under 5 minutes this week. Short wins build momentum.");
-  }
-
-  // Based on wants to learn
-  if (answers.wantsToLearn === 'yes') {
-    plan.push("Since they've expressed interest, ask what instrument or song sparked that curiosity.");
-  }
-
-  // Based on performer style
-  if (answers.performerStyle === 'nervous') {
-    plan.push("Create a safe space for musical play — no audience, no pressure, just exploration.");
-  }
-
-  // Based on drawn to instruments
-  if (answers.drawnToInstruments === 'yes') {
-    plan.push("Next time you see an instrument in public, let them explore it for a few minutes.");
-  }
+  plan.push("Set aside 5 minutes this week for 'music time' — no agenda, just play.");
 
   return plan.slice(0, 6);
 }
@@ -368,6 +346,7 @@ export interface Submission extends QuizAnswers, ScoringResult {
   source: string;
 }
 
+// Create initial submission with fallback action plan (can be updated with AI plan later)
 export function createSubmission(answers: QuizAnswers): Submission {
   const result = calculateReadinessScore(answers);
   const actionPlan = generateActionPlan(answers, result);
@@ -379,6 +358,27 @@ export function createSubmission(answers: QuizAnswers): Submission {
     createdAt: new Date().toISOString(),
     actionPlan,
     source: 'Music Readiness Score',
+  };
+}
+
+// Prepare data for AI action plan generation
+export function getActionPlanContext(submission: Submission) {
+  return {
+    childName: submission.childName,
+    parentName: submission.parentName,
+    score: submission.score,
+    band: submission.band,
+    bandLabel: submission.bandLabel,
+    primaryInstrument: submission.primaryInstrument,
+    secondaryInstruments: submission.secondaryInstruments,
+    instrumentsAtHome: submission.instrumentsAtHome,
+    focusDuration: submission.focusDuration,
+    performerStyle: submission.performerStyle,
+    wantsToLearn: submission.wantsToLearn,
+    drawnToInstruments: submission.drawnToInstruments,
+    hummingSinging: submission.hummingSinging,
+    rhythmPlay: submission.rhythmPlay,
+    dancing: submission.dancing,
   };
 }
 

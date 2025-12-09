@@ -6,7 +6,7 @@ import { OptionButton } from "./OptionButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { QuizAnswers, createSubmission, Submission } from "@/lib/scoring";
+import { QuizAnswers, createSubmission, getActionPlanContext, Submission } from "@/lib/scoring";
 import { saveSubmission } from "@/lib/storage";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
@@ -103,6 +103,31 @@ export function QuizForm() {
     }
   };
 
+  const generateAIActionPlan = async (submission: Submission): Promise<string[] | null> => {
+    try {
+      console.log("Generating AI action plan...");
+      const context = getActionPlanContext(submission);
+      const { data, error } = await supabase.functions.invoke("generate-action-plan", {
+        body: context,
+      });
+      
+      if (error) {
+        console.error("Error generating AI action plan:", error);
+        return null;
+      }
+      
+      if (data?.actionPlan && Array.isArray(data.actionPlan)) {
+        console.log("AI action plan generated successfully");
+        return data.actionPlan;
+      }
+      
+      return null;
+    } catch (err) {
+      console.error("Failed to generate AI action plan:", err);
+      return null;
+    }
+  };
+
   const handleSubmit = async () => {
     if (answers.childName.trim() === "") {
       setErrors({ childName: "Please enter your child's name" });
@@ -110,9 +135,16 @@ export function QuizForm() {
     }
 
     setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 800));
     
+    // Create initial submission with fallback action plan
     const submission = createSubmission(answers);
+    
+    // Try to get AI-generated action plan
+    const aiActionPlan = await generateAIActionPlan(submission);
+    if (aiActionPlan) {
+      submission.actionPlan = aiActionPlan;
+    }
+    
     saveSubmission(submission);
     
     // Fire-and-forget: send emails without blocking navigation
