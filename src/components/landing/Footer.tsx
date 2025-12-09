@@ -9,7 +9,7 @@ export function Footer() {
 
         <div className="text-sm text-muted-foreground text-center sm:text-right">
           <p>A modern, student-focused music school in Friendswood, TX</p>
-          <a href="https://bestlessonever.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline mt-1 inline-block">
+          <a target="_blank" rel="noopener noreferrer" className="text-primary hover:underline mt-1 inline-block" href="https://bestlessonever.com/friendswood">
             Visit our main site →
           </a>
         </div>
