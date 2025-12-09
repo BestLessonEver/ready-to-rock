@@ -14,7 +14,7 @@ const steps = [
   {
     icon: Rocket,
     title: "First-week action plan",
-    description: "Concrete next steps to set them up for success.",
+    description: "Start your child's musical journey now!",
   },
 ];
 
