@@ -164,12 +164,12 @@ export function QuizForm() {
         {/* Screen 2: Pitch */}
         {step === 2 && (
           <QuizCard key="step2">
-            <QuizCardTitle subtitle="Musical aptitude">
+            <QuizCardTitle subtitle="Musical Aptitude">
               When your child sings, do they usually stay close to the melody?
             </QuizCardTitle>
             <div className="space-y-2">
               <OptionButton
-                label="Yes, mostly on tune"
+                label="Yes, mostly in tune"
                 selected={answers.pitch === "yes-on-tune"}
                 onClick={() => selectAndAdvance("pitch", "yes-on-tune")}
               />
@@ -190,7 +190,7 @@ export function QuizForm() {
         {/* Screen 3: Rhythm */}
         {step === 3 && (
           <QuizCard key="step3">
-            <QuizCardTitle subtitle="Musical aptitude">
+            <QuizCardTitle subtitle="Musical Aptitude">
               Can your child keep a steady beat for about 10 seconds?
             </QuizCardTitle>
             <div className="space-y-2">
@@ -216,8 +216,8 @@ export function QuizForm() {
         {/* Screen 4: Memory */}
         {step === 4 && (
           <QuizCard key="step4">
-            <QuizCardTitle subtitle="Musical aptitude">
-              Does your child remember songs easily after hearing them a few times?
+            <QuizCardTitle subtitle="Musical Aptitude">
+              Does your child remember a song easily after hearing it only a few times?
             </QuizCardTitle>
             <div className="space-y-2">
               <OptionButton
@@ -242,7 +242,7 @@ export function QuizForm() {
         {/* Screen 5: Emotional Response */}
         {step === 5 && (
           <QuizCard key="step5">
-            <QuizCardTitle subtitle="Musical aptitude">
+            <QuizCardTitle subtitle="Musical Aptitude">
               Does your child react emotionally when they hear music?
             </QuizCardTitle>
             <div className="space-y-2">
@@ -268,8 +268,8 @@ export function QuizForm() {
         {/* Screen 6: Email Capture */}
         {step === 6 && (
           <QuizCard key="step6">
-            <QuizCardTitle subtitle="Save your progress">
-              Okay {answers.parentName}, enter your email so we can send you your child's final Music Readiness Score when you finish.
+            <QuizCardTitle subtitle="Save Your Progress">
+              Okay {answers.parentName}, enter your email so we can send you your child's Music Readiness Score and Action Plan when you finish.
             </QuizCardTitle>
             <div className="space-y-2">
               <Label htmlFor="email">Email address</Label>
@@ -291,8 +291,8 @@ export function QuizForm() {
         {/* Screen 7: Humming/Singing */}
         {step === 7 && (
           <QuizCard key="step7">
-            <QuizCardTitle subtitle="Musical behaviors">
-              Does your child hum, sing, or make up little tunes during the day?
+            <QuizCardTitle subtitle="Musical Behaviors">
+              Does your child hum, sing, or make up their own songs during the day?
             </QuizCardTitle>
             <div className="space-y-2">
               <OptionButton
@@ -317,7 +317,7 @@ export function QuizForm() {
         {/* Screen 8: Rhythm Play */}
         {step === 8 && (
           <QuizCard key="step8">
-            <QuizCardTitle subtitle="Musical behaviors">
+            <QuizCardTitle subtitle="Musical Behaviors">
               Does your child tap on tables, beatbox, or create rhythms with objects?
             </QuizCardTitle>
             <div className="space-y-2">
@@ -343,7 +343,7 @@ export function QuizForm() {
         {/* Screen 9: Dancing */}
         {step === 9 && (
           <QuizCard key="step9">
-            <QuizCardTitle subtitle="Musical behaviors">
+            <QuizCardTitle subtitle="Musical Behaviors">
               Does your child start dancing when music comes on?
             </QuizCardTitle>
             <div className="space-y-2">
@@ -369,7 +369,7 @@ export function QuizForm() {
         {/* Screen 10: Drawn to Instruments */}
         {step === 10 && (
           <QuizCard key="step10">
-            <QuizCardTitle subtitle="Musical behaviors">
+            <QuizCardTitle subtitle="Musical Behaviors">
               When your child sees musical instruments in public places, do they want to touch or explore them?
             </QuizCardTitle>
             <div className="space-y-2">
@@ -396,7 +396,7 @@ export function QuizForm() {
         {step === 11 && (
           <QuizCard key="step11">
             <QuizCardTitle subtitle="Personality">
-              How does your child feel about performing or showing what they learned?
+              How does your child feel about performing in front of others?
             </QuizCardTitle>
             <div className="space-y-2">
               <OptionButton
@@ -495,7 +495,7 @@ export function QuizForm() {
                 multiSelect
               />
               <OptionButton
-                label="Drums / electronic kit"
+                label="Drums"
                 selected={answers.instrumentsAtHome.includes("drums")}
                 onClick={() => toggleArrayItem("instrumentsAtHome", "drums")}
                 multiSelect
@@ -519,7 +519,7 @@ export function QuizForm() {
         {/* Screen 15: Final Lead Capture */}
         {step === 15 && (
           <QuizCard key="step15">
-            <QuizCardTitle subtitle="Almost done!">
+            <QuizCardTitle subtitle="Almost Done!">
               What's your child's name?
             </QuizCardTitle>
             <div className="space-y-5">
