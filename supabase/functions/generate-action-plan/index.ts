@@ -29,7 +29,19 @@ serve(async (req) => {
   }
 
   try {
-    const submission: SubmissionData = await req.json();
+    // Read body as text first to handle empty body gracefully
+    const bodyText = await req.text();
+    console.log("Request body length:", bodyText?.length || 0);
+
+    if (!bodyText || bodyText.length === 0) {
+      console.error("Empty request body received");
+      return new Response(JSON.stringify({ error: "Empty request body" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const submission: SubmissionData = JSON.parse(bodyText);
     console.log("Generating action plan for:", submission.childName);
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
