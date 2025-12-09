@@ -147,7 +147,7 @@ const handler = async (req: Request): Promise<Response> => {
     const leadEmailResponse = await resend.emails.send({
       from: "Best Lesson Ever <info@bestlessonever.com>",
       to: ["bestlessoninfo@gmail.com"],
-      subject: `🎵 New Lead: ${submission.childName} scored ${submission.score}/100`,
+      subject: `New Lead: ${submission.childName} scored ${submission.score}/100`,
       html: leadEmailHtml,
     });
     console.log("Lead email sent:", leadEmailResponse);
@@ -160,7 +160,7 @@ const handler = async (req: Request): Promise<Response> => {
     const parentEmailHtml = `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
         <h1 style="color: #1a1a1a;">
-          ${submission.childName}'s Music Readiness Results Are In! 🎵
+          ${submission.childName}'s Music Readiness Results Are In!
         </h1>
         
         <p style="font-size: 16px; color: #374151;">Hi ${submission.parentName},</p>
@@ -194,15 +194,15 @@ const handler = async (req: Request): Promise<Response> => {
 
         <div style="background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); padding: 24px; border-radius: 12px; margin: 32px 0; text-align: center;">
           <h2 style="color: white; margin-top: 0;">Ready to Get Started?</h2>
-          <p style="color: rgba(255,255,255,0.9); margin-bottom: 16px;">Book a free lesson planning call with Best Lesson Ever.</p>
-          <a href="${bookingUrl}" style="display: inline-block; background: white; color: #3b82f6; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">Book a Lesson Planning Call</a>
+          <p style="color: rgba(255,255,255,0.9); margin-bottom: 16px;">Book a free trial lesson with Best Lesson Ever!</p>
+          <a href="${bookingUrl}" style="display: inline-block; background: white; color: #3b82f6; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">Book a Free Trial</a>
         </div>
 
         <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 32px;">
           <p style="color: #6b7280; font-size: 14px; margin: 0;">
-            <strong>Best Lesson Ever</strong><br>
-            Student-led music lessons that actually stick.<br>
-            <a href="https://bestlessonever.com" style="color: #3b82f6;">bestlessonever.com</a>
+            <strong>Best Lesson Ever!</strong><br>
+            Student-focused music lessons that actually stick.<br>
+            <a href="https://bestlessonever.com/friendswood" style="color: #3b82f6;">bestlessonever.com/friendswood</a>
           </p>
         </div>
       </div>
@@ -212,7 +212,7 @@ const handler = async (req: Request): Promise<Response> => {
     const parentEmailResponse = await resend.emails.send({
       from: "Best Lesson Ever <info@bestlessonever.com>",
       to: [submission.email],
-      subject: `${submission.childName}'s Music Readiness Results Are In! 🎵`,
+      subject: `${submission.childName}'s Music Readiness Results Are In!`,
       html: parentEmailHtml,
     });
     console.log("Parent email sent:", parentEmailResponse);
