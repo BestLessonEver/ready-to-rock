@@ -125,7 +125,7 @@ export function QuizForm() {
     <div className="w-full max-w-lg mx-auto space-y-4">
       <ProgressBar currentStep={step} totalSteps={TOTAL_STEPS} />
 
-      <div className="min-h-[400px]">
+      <div>
         {/* Screen 1: Parent Name */}
         {step === 1 && (
           <QuizCard key="step1">
