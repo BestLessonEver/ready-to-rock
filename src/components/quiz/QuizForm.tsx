@@ -45,6 +45,13 @@ export function QuizForm() {
     setErrors(prev => ({ ...prev, [key]: "" }));
   };
 
+  const selectAndAdvance = <K extends keyof QuizAnswers>(key: K, value: QuizAnswers[K]) => {
+    updateAnswer(key, value);
+    setTimeout(() => {
+      setStep(prev => Math.min(prev + 1, TOTAL_STEPS));
+    }, 300);
+  };
+
   const toggleArrayItem = (key: 'instrumentsAtHome', item: string) => {
     setAnswers(prev => {
       const current = prev[key];
@@ -149,17 +156,17 @@ export function QuizForm() {
               <OptionButton
                 label="Yes, mostly on tune"
                 selected={answers.pitch === "yes-on-tune"}
-                onClick={() => updateAnswer("pitch", "yes-on-tune")}
+                onClick={() => selectAndAdvance("pitch", "yes-on-tune")}
               />
               <OptionButton
                 label="Sometimes"
                 selected={answers.pitch === "sometimes"}
-                onClick={() => updateAnswer("pitch", "sometimes")}
+                onClick={() => selectAndAdvance("pitch", "sometimes")}
               />
               <OptionButton
                 label="Not really, but they love singing"
                 selected={answers.pitch === "not-really"}
-                onClick={() => updateAnswer("pitch", "not-really")}
+                onClick={() => selectAndAdvance("pitch", "not-really")}
               />
             </div>
           </QuizCard>
@@ -175,17 +182,17 @@ export function QuizForm() {
               <OptionButton
                 label="Yes"
                 selected={answers.rhythm === "yes"}
-                onClick={() => updateAnswer("rhythm", "yes")}
+                onClick={() => selectAndAdvance("rhythm", "yes")}
               />
               <OptionButton
                 label="Sometimes"
                 selected={answers.rhythm === "sometimes"}
-                onClick={() => updateAnswer("rhythm", "sometimes")}
+                onClick={() => selectAndAdvance("rhythm", "sometimes")}
               />
               <OptionButton
                 label="Not yet"
                 selected={answers.rhythm === "not-yet"}
-                onClick={() => updateAnswer("rhythm", "not-yet")}
+                onClick={() => selectAndAdvance("rhythm", "not-yet")}
               />
             </div>
           </QuizCard>
@@ -201,17 +208,17 @@ export function QuizForm() {
               <OptionButton
                 label="Yes"
                 selected={answers.memory === "yes"}
-                onClick={() => updateAnswer("memory", "yes")}
+                onClick={() => selectAndAdvance("memory", "yes")}
               />
               <OptionButton
                 label="Sometimes"
                 selected={answers.memory === "sometimes"}
-                onClick={() => updateAnswer("memory", "sometimes")}
+                onClick={() => selectAndAdvance("memory", "sometimes")}
               />
               <OptionButton
                 label="Not really"
                 selected={answers.memory === "not-really"}
-                onClick={() => updateAnswer("memory", "not-really")}
+                onClick={() => selectAndAdvance("memory", "not-really")}
               />
             </div>
           </QuizCard>
@@ -227,17 +234,17 @@ export function QuizForm() {
               <OptionButton
                 label="Yes"
                 selected={answers.emotionalResponse === "yes"}
-                onClick={() => updateAnswer("emotionalResponse", "yes")}
+                onClick={() => selectAndAdvance("emotionalResponse", "yes")}
               />
               <OptionButton
                 label="Sometimes"
                 selected={answers.emotionalResponse === "sometimes"}
-                onClick={() => updateAnswer("emotionalResponse", "sometimes")}
+                onClick={() => selectAndAdvance("emotionalResponse", "sometimes")}
               />
               <OptionButton
                 label="Not that I've noticed"
                 selected={answers.emotionalResponse === "not-noticed"}
-                onClick={() => updateAnswer("emotionalResponse", "not-noticed")}
+                onClick={() => selectAndAdvance("emotionalResponse", "not-noticed")}
               />
             </div>
           </QuizCard>
@@ -276,17 +283,17 @@ export function QuizForm() {
               <OptionButton
                 label="All the time"
                 selected={answers.hummingSinging === "all-the-time"}
-                onClick={() => updateAnswer("hummingSinging", "all-the-time")}
+                onClick={() => selectAndAdvance("hummingSinging", "all-the-time")}
               />
               <OptionButton
                 label="Sometimes"
                 selected={answers.hummingSinging === "sometimes"}
-                onClick={() => updateAnswer("hummingSinging", "sometimes")}
+                onClick={() => selectAndAdvance("hummingSinging", "sometimes")}
               />
               <OptionButton
                 label="Rarely"
                 selected={answers.hummingSinging === "rarely"}
-                onClick={() => updateAnswer("hummingSinging", "rarely")}
+                onClick={() => selectAndAdvance("hummingSinging", "rarely")}
               />
             </div>
           </QuizCard>
@@ -302,17 +309,17 @@ export function QuizForm() {
               <OptionButton
                 label="Constantly"
                 selected={answers.rhythmPlay === "constantly"}
-                onClick={() => updateAnswer("rhythmPlay", "constantly")}
+                onClick={() => selectAndAdvance("rhythmPlay", "constantly")}
               />
               <OptionButton
                 label="Sometimes"
                 selected={answers.rhythmPlay === "sometimes"}
-                onClick={() => updateAnswer("rhythmPlay", "sometimes")}
+                onClick={() => selectAndAdvance("rhythmPlay", "sometimes")}
               />
               <OptionButton
                 label="Rarely"
                 selected={answers.rhythmPlay === "rarely"}
-                onClick={() => updateAnswer("rhythmPlay", "rarely")}
+                onClick={() => selectAndAdvance("rhythmPlay", "rarely")}
               />
             </div>
           </QuizCard>
@@ -328,17 +335,17 @@ export function QuizForm() {
               <OptionButton
                 label="Yes"
                 selected={answers.dancing === "yes"}
-                onClick={() => updateAnswer("dancing", "yes")}
+                onClick={() => selectAndAdvance("dancing", "yes")}
               />
               <OptionButton
                 label="Sometimes"
                 selected={answers.dancing === "sometimes"}
-                onClick={() => updateAnswer("dancing", "sometimes")}
+                onClick={() => selectAndAdvance("dancing", "sometimes")}
               />
               <OptionButton
                 label="No"
                 selected={answers.dancing === "no"}
-                onClick={() => updateAnswer("dancing", "no")}
+                onClick={() => selectAndAdvance("dancing", "no")}
               />
             </div>
           </QuizCard>
@@ -354,17 +361,17 @@ export function QuizForm() {
               <OptionButton
                 label="Yes"
                 selected={answers.drawnToInstruments === "yes"}
-                onClick={() => updateAnswer("drawnToInstruments", "yes")}
+                onClick={() => selectAndAdvance("drawnToInstruments", "yes")}
               />
               <OptionButton
                 label="Sometimes"
                 selected={answers.drawnToInstruments === "sometimes"}
-                onClick={() => updateAnswer("drawnToInstruments", "sometimes")}
+                onClick={() => selectAndAdvance("drawnToInstruments", "sometimes")}
               />
               <OptionButton
                 label="Not really"
                 selected={answers.drawnToInstruments === "not-really"}
-                onClick={() => updateAnswer("drawnToInstruments", "not-really")}
+                onClick={() => selectAndAdvance("drawnToInstruments", "not-really")}
               />
             </div>
           </QuizCard>
@@ -380,17 +387,17 @@ export function QuizForm() {
               <OptionButton
                 label="Jumps right in and experiments"
                 selected={answers.handlesCorrection === "jumps-in"}
-                onClick={() => updateAnswer("handlesCorrection", "jumps-in")}
+                onClick={() => selectAndAdvance("handlesCorrection", "jumps-in")}
               />
               <OptionButton
                 label="Tries but needs encouragement"
                 selected={answers.handlesCorrection === "needs-encouragement"}
-                onClick={() => updateAnswer("handlesCorrection", "needs-encouragement")}
+                onClick={() => selectAndAdvance("handlesCorrection", "needs-encouragement")}
               />
               <OptionButton
                 label="Gets frustrated easily"
                 selected={answers.handlesCorrection === "frustrated"}
-                onClick={() => updateAnswer("handlesCorrection", "frustrated")}
+                onClick={() => selectAndAdvance("handlesCorrection", "frustrated")}
               />
             </div>
           </QuizCard>
@@ -406,17 +413,17 @@ export function QuizForm() {
               <OptionButton
                 label="Loves showing off"
                 selected={answers.performerStyle === "loves-showing"}
-                onClick={() => updateAnswer("performerStyle", "loves-showing")}
+                onClick={() => selectAndAdvance("performerStyle", "loves-showing")}
               />
               <OptionButton
                 label="A little shy but still tries"
                 selected={answers.performerStyle === "shy-but-tries"}
-                onClick={() => updateAnswer("performerStyle", "shy-but-tries")}
+                onClick={() => selectAndAdvance("performerStyle", "shy-but-tries")}
               />
               <OptionButton
                 label="Very nervous / prefers privacy"
                 selected={answers.performerStyle === "nervous"}
-                onClick={() => updateAnswer("performerStyle", "nervous")}
+                onClick={() => selectAndAdvance("performerStyle", "nervous")}
               />
             </div>
           </QuizCard>
@@ -432,22 +439,22 @@ export function QuizForm() {
               <OptionButton
                 label="20+ minutes"
                 selected={answers.focusDuration === "20-plus"}
-                onClick={() => updateAnswer("focusDuration", "20-plus")}
+                onClick={() => selectAndAdvance("focusDuration", "20-plus")}
               />
               <OptionButton
                 label="10–20 minutes"
                 selected={answers.focusDuration === "10-20"}
-                onClick={() => updateAnswer("focusDuration", "10-20")}
+                onClick={() => selectAndAdvance("focusDuration", "10-20")}
               />
               <OptionButton
                 label="5–10 minutes"
                 selected={answers.focusDuration === "5-10"}
-                onClick={() => updateAnswer("focusDuration", "5-10")}
+                onClick={() => selectAndAdvance("focusDuration", "5-10")}
               />
               <OptionButton
                 label="Under 5 minutes"
                 selected={answers.focusDuration === "under-5"}
-                onClick={() => updateAnswer("focusDuration", "under-5")}
+                onClick={() => selectAndAdvance("focusDuration", "under-5")}
               />
             </div>
           </QuizCard>
@@ -463,17 +470,17 @@ export function QuizForm() {
               <OptionButton
                 label="Yes"
                 selected={answers.wantsToLearn === "yes"}
-                onClick={() => updateAnswer("wantsToLearn", "yes")}
+                onClick={() => selectAndAdvance("wantsToLearn", "yes")}
               />
               <OptionButton
                 label="Not yet"
                 selected={answers.wantsToLearn === "not-yet"}
-                onClick={() => updateAnswer("wantsToLearn", "not-yet")}
+                onClick={() => selectAndAdvance("wantsToLearn", "not-yet")}
               />
               <OptionButton
                 label="No"
                 selected={answers.wantsToLearn === "no"}
-                onClick={() => updateAnswer("wantsToLearn", "no")}
+                onClick={() => selectAndAdvance("wantsToLearn", "no")}
               />
             </div>
           </QuizCard>
@@ -489,17 +496,17 @@ export function QuizForm() {
               <OptionButton
                 label="Yes"
                 selected={answers.favoriteSongBehavior === "yes"}
-                onClick={() => updateAnswer("favoriteSongBehavior", "yes")}
+                onClick={() => selectAndAdvance("favoriteSongBehavior", "yes")}
               />
               <OptionButton
                 label="Sometimes"
                 selected={answers.favoriteSongBehavior === "sometimes"}
-                onClick={() => updateAnswer("favoriteSongBehavior", "sometimes")}
+                onClick={() => selectAndAdvance("favoriteSongBehavior", "sometimes")}
               />
               <OptionButton
                 label="Rarely"
                 selected={answers.favoriteSongBehavior === "rarely"}
-                onClick={() => updateAnswer("favoriteSongBehavior", "rarely")}
+                onClick={() => selectAndAdvance("favoriteSongBehavior", "rarely")}
               />
             </div>
           </QuizCard>
