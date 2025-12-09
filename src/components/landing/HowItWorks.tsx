@@ -9,7 +9,7 @@ const steps = [
   {
     icon: Target,
     title: "Get your Readiness Score",
-    description: "Plus a personalized instrument recommendation.",
+    description: "Find out if they can handle learning an instrument.",
   },
   {
     icon: Rocket,
