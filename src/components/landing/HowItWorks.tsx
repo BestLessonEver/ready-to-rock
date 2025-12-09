@@ -4,7 +4,7 @@ const steps = [
   {
     icon: ClipboardList,
     title: "Tell us about your child",
-    description: "Age, personality, interests — the basics.",
+    description: "Is your kid a musical genius?",
   },
   {
     icon: Target,
