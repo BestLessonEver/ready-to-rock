@@ -1,15 +1,15 @@
 import { HelpCircle, CheckCircle } from "lucide-react";
 
 const questions = [
-  "Are they old enough?",
+  "Is my kid old enough?",
   "Which instrument should we start with?",
-  "Will they even like it?",
+  "Will they even practice?",
 ];
 
 const benefits = [
   "Designed by real music teachers with years of experience",
   "Tailored recommendations based on your child's personality",
-  "Clear, actionable steps to make the first lesson a win",
+  "Clear, actionable steps to make learning music awesome!",
 ];
 
 export function WhyItMatters() {
