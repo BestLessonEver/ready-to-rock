@@ -18,7 +18,6 @@ export interface QuizAnswers {
   drawnToInstruments: string;
 
   // Personality questions
-  handlesCorrection: string;
   performerStyle: string;
   focusDuration: string;
 
@@ -144,20 +143,7 @@ export function calculateReadinessScore(answers: QuizAnswers): ScoringResult {
       break;
   }
 
-  // Handles correction (Q10) - light weight
-  switch (answers.handlesCorrection) {
-    case 'jumps-in':
-      score += 8;
-      break;
-    case 'needs-encouragement':
-      score += 5;
-      break;
-    case 'frustrated':
-      score += 2;
-      break;
-  }
-
-  // Performer style (Q11) - light weight
+  // Performer style - light weight
   switch (answers.performerStyle) {
     case 'loves-showing':
       score += 6;
