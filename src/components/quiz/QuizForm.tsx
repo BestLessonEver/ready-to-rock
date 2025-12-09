@@ -149,7 +149,7 @@ export function QuizForm() {
               What's your name?
             </QuizCardTitle>
             <div className="space-y-2">
-              <Label htmlFor="parentName">Your first name</Label>
+              
               <Input
                 id="parentName"
                 placeholder="Enter your name"
