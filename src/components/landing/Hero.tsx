@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Music, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
+import bleLogoIcon from "@/assets/ble-logo-icon.png";
 interface HeroProps {
   onStartQuiz: () => void;
 }
@@ -24,7 +25,7 @@ export function Hero({
       <div className="relative z-10 max-w-2xl mx-auto text-center space-y-8">
         {/* Badge */}
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary animate-fade-in">
-          <Music className="h-4 w-4" />
+          <img src={bleLogoIcon} alt="" className="h-4 w-4" />
           <span className="text-sm font-medium">90-second quiz</span>
         </div>
 
