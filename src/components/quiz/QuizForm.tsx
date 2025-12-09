@@ -122,7 +122,7 @@ export function QuizForm() {
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto space-y-6">
+    <div className="w-full max-w-lg mx-auto space-y-4">
       <ProgressBar currentStep={step} totalSteps={TOTAL_STEPS} />
 
       <div className="min-h-[400px]">
