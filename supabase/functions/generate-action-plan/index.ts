@@ -60,21 +60,56 @@ serve(async (req) => {
     
     const hasInstruments = homeInstruments.length > 0;
 
-    const systemPrompt = `You are a helpful music education advisor for Best Lesson Ever, a modern student-led music school. You create personalized, actionable first-week action plans for parents based on their child's music readiness assessment.
+    const systemPrompt = `You are a music education advisor for Best Lesson Ever, a modern, student-led music school. Your job is to create bold, modern, fun, highly actionable first-week action plans for parents based on their child's music readiness assessment.
 
-Your tone is direct, warm, and confident. Talk to parents like intelligent adults. Avoid cheesy sales language.
+Tone rules:
+- Direct, confident, modern, and fun (BLE brand)
+- No fluff, no teacher jargon, no cheesy sales writing
+- One sentence per bullet, punchy and energetic
+- Always focus on the child, not the parent
+- Always use the child's name 2–3 times throughout the plan
 
-Guidelines for action items:
-- Each item should be specific and achievable within the first week
-- Include a mix of discovery activities and practical steps
-- If no specific instrument preference was given, include an item about discovering which instrument excites the child most
-- Reference instruments at home when applicable
-- Match the complexity to the child's readiness level
-- For "emerging" readiness: focus on low-pressure, playful exposure
-- For "ready-with-support": balance fun with light structure
-- For "ready-to-thrive": include more goal-oriented activities
+Action Plan Structure (always follow this sequence):
 
-Return ONLY a JSON array of 5-6 action plan strings. No explanation, no markdown formatting, just the JSON array.`;
+1. TONIGHT ACTION (always the same wording):
+   "Tonight, play one of ${submission.childName}'s favorite songs and have them clap to the beat, sing along, or try both at the same time."
+
+2. MICRO-TEST (adaptive based on child traits):
+   - If the child hums or sings → Melody Echo Game (sing a tiny 2–3 note pattern and have them echo it)
+   - If the child taps/beatboxes → Rhythm Duel (tap a short pattern and have them copy it)
+   - If the child dances → Freeze Game (play music and freeze randomly)
+   - If the child is shy/quiet → Gentle Call & Response (clap one pattern and have them clap it back softly)
+   - If the child loves performing → Clap & Move Game (you clap a beat, they move/dance in rhythm)
+
+3. INSTRUMENT TRYOUT (only include if the household owns that instrument):
+   - Guitar at home → Try placing two fingers to make an E minor chord
+   - Ukulele at home → Try forming a G chord
+   - Piano/keyboard at home → Play random notes and let the child try to sing them back; test high/low recognition; the parent may sing along
+   - Drums at home → Copy a simple kick–snare pattern on pillows or a practice pad
+
+4. DISCOVERY MOMENT (always include):
+   Instrument Personality Test:
+   "Show quick clips of a drummer, guitarist, pianist, and singer, and ask ${submission.childName}: 'Which one would YOU want to be?'"
+
+5. CONFIDENCE MOMENT (adaptive):
+   - If they love performing → tiny living-room concert
+   - If shy → private one-person show
+   - If rhythmic → "show me your beat" moment
+   - If exploratory → "show me your favorite sound"
+   - If creative → 3-word songwriting challenge
+
+6. TRIAL LESSON (always the final bullet):
+   "Sign ${submission.childName} up for a trial lesson at a local music school—an experienced instructor can spot strengths within minutes and give clear next steps."
+
+Other Rules:
+- Always produce 5–6 bullets
+- Always return ONLY a JSON array of bullet strings
+- No explanations, no markdown, no extra text
+- Keep bullets short, doable within 5–10 minutes
+- Incorporate readiness level: 
+   • Emerging → more playful, low-pressure
+   • Ready With Support → balanced structure + fun
+   • Ready to Thrive → slightly more goal-oriented`;
 
     const userPrompt = `Create a personalized first-week action plan for this child:
 
@@ -82,16 +117,24 @@ Child's name: ${submission.childName}
 Readiness level: ${submission.bandLabel} (score: ${submission.score}/100)
 Recommended instrument: ${submission.primaryInstrument}
 Alternative instruments: ${submission.secondaryInstruments.join(', ')}
-Instruments at home: ${hasInstruments ? homeInstruments.join(', ') : 'None'}
-Focus duration: ${formatFocusDuration(submission.focusDuration)}
-Performer style: ${formatPerformerStyle(submission.performerStyle)}
-Expressed interest in learning: ${submission.wantsToLearn === 'yes' ? 'Yes' : 'Not yet'}
-Drawn to instruments in public: ${submission.drawnToInstruments === 'yes' ? 'Yes' : submission.drawnToInstruments === 'sometimes' ? 'Sometimes' : 'Not really'}
-Hums/sings during the day: ${submission.hummingSinging === 'all-the-time' ? 'All the time' : submission.hummingSinging === 'sometimes' ? 'Sometimes' : 'Rarely'}
-Creates rhythms with objects: ${submission.rhythmPlay === 'constantly' ? 'Constantly' : submission.rhythmPlay === 'sometimes' ? 'Sometimes' : 'Rarely'}
-Dances to music: ${submission.dancing === 'yes' ? 'Yes' : submission.dancing === 'sometimes' ? 'Sometimes' : 'No'}
 
-Remember: Include a discovery prompt about what instrument specifically excites ${submission.childName} if they haven't expressed a clear preference. This helps parents have that conversation.`;
+Child traits:
+- Hums/sings during day: ${submission.hummingSinging}
+- Creates rhythms with objects: ${submission.rhythmPlay}
+- Dances to music: ${submission.dancing}
+- Performer style: ${submission.performerStyle}
+- Focus duration: ${formatFocusDuration(submission.focusDuration)}
+- Wants to learn an instrument: ${submission.wantsToLearn}
+- Drawn to instruments in public: ${submission.drawnToInstruments}
+
+Instruments at home: ${hasInstruments ? homeInstruments.join(', ') : 'None'}
+
+Remember:
+- Follow the exact BLE Action Plan Structure
+- Adapt Micro-Test and Confidence Moment to the child's traits
+- Include the instrument tryout step ONLY if the family owns that instrument
+- Use the child's name 2–3 times
+- Return ONLY a JSON array of 5–6 bullet strings`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -182,37 +225,48 @@ function formatFocusDuration(value: string): string {
   }
 }
 
-function formatPerformerStyle(value: string): string {
-  switch (value) {
-    case 'loves-showing': return 'Loves showing off';
-    case 'shy-but-tries': return 'A little shy but still tries';
-    case 'nervous': return 'Very nervous, prefers privacy';
-    default: return value;
-  }
-}
-
 function getDefaultActionPlan(submission: SubmissionData): string[] {
   const plan: string[] = [];
-  const { band, primaryInstrument, childName } = submission;
+  const { band, childName, instrumentsAtHome, hummingSinging, dancing, performerStyle } = submission;
 
-  plan.push(`Ask ${childName} which instrument they think looks the coolest — their answer might surprise you.`);
-  plan.push(`Watch a short performance video together and ask what they liked about it.`);
+  // 1. TONIGHT ACTION (always the same)
+  plan.push(`Tonight, play one of ${childName}'s favorite songs and have them clap to the beat, sing along, or try both at the same time.`);
 
-  if (submission.instrumentsAtHome.length > 0 && !submission.instrumentsAtHome.includes('not-yet')) {
-    plan.push(`Let ${childName} explore the ${primaryInstrument.toLowerCase()} at home with no pressure. Ask them to show you their favorite sound.`);
+  // 2. MICRO-TEST (adaptive)
+  if (hummingSinging === 'all-the-time') {
+    plan.push(`Try the Melody Echo Game: sing a tiny 2–3 note pattern and have ${childName} echo it back.`);
+  } else if (dancing === 'yes') {
+    plan.push(`Play the Freeze Game: put on music and freeze randomly—see if ${childName} can stop on a dime.`);
   } else {
-    plan.push(`Try a simple rhythm game: clap or tap along to a favorite song together.`);
+    plan.push(`Try a Rhythm Duel: tap a short pattern and have ${childName} copy it.`);
   }
 
-  if (band === 'emerging') {
-    plan.push(`Focus on fun over structure. Dance parties, singing in the car, or tapping on pots all count.`);
-  } else if (band === 'ready-with-support') {
-    plan.push(`Talk about what kind of teacher personality might click with ${childName} (silly? calm? energetic?).`);
-  } else {
-    plan.push(`Research local options and book a trial lesson to see how ${childName} responds to real instruction.`);
+  // 3. INSTRUMENT TRYOUT (only if they have instruments)
+  const hasInstruments = instrumentsAtHome.length > 0 && !instrumentsAtHome.includes('not-yet');
+  if (hasInstruments) {
+    if (instrumentsAtHome.includes('keyboard-piano')) {
+      plan.push(`At the piano, play random notes and have ${childName} try to sing them back—test if they can tell high from low.`);
+    } else if (instrumentsAtHome.includes('guitar-ukulele')) {
+      plan.push(`Hand ${childName} the guitar/ukulele and help them place two fingers to make an E minor or G chord.`);
+    } else if (instrumentsAtHome.includes('drums')) {
+      plan.push(`Have ${childName} copy a simple kick–snare pattern on pillows or a practice pad.`);
+    }
   }
 
-  plan.push(`Set aside 5 minutes this week for "music time" — no agenda, just play.`);
+  // 4. DISCOVERY MOMENT (always include)
+  plan.push(`Show quick clips of a drummer, guitarist, pianist, and singer, then ask ${childName}: "Which one would YOU want to be?"`);
+
+  // 5. CONFIDENCE MOMENT (adaptive)
+  if (performerStyle === 'loves-showing') {
+    plan.push(`Host a tiny living-room concert—let ${childName} pick the song and perform for the family.`);
+  } else if (performerStyle === 'nervous') {
+    plan.push(`Set up a private one-person show—just ${childName} performing for you, no audience pressure.`);
+  } else {
+    plan.push(`Ask ${childName} to "show me your favorite sound" on any object around the house.`);
+  }
+
+  // 6. TRIAL LESSON (always the final bullet)
+  plan.push(`Sign ${childName} up for a trial lesson at a local music school—an experienced instructor can spot strengths within minutes and give clear next steps.`);
 
   return plan.slice(0, 6);
 }
