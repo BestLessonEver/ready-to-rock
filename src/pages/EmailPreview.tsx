@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { RefreshCw, Loader2 } from "lucide-react";
 
-// Sample submission data matching the edge function format
+// Sample submission data matching the edge function SubmissionData interface
 const sampleSubmissionData = {
   childName: "Emma",
   parentName: "Sarah Johnson",
@@ -13,20 +13,15 @@ const sampleSubmissionData = {
   bandDescription: "Emma shows excellent musical readiness! She's likely to thrive with the right teacher and instrument match.",
   primaryInstrument: "Piano",
   secondaryInstruments: ["Guitar", "Voice"],
-  answers: {
-    pitch: "yes-on-tune",
-    rhythm: "yes",
-    memory: "yes",
-    emotionalResponse: "yes",
-    hummingSinging: "all-the-time",
-    rhythmPlay: "constantly",
-    dancing: "yes",
-    drawnToInstruments: "yes",
-    performerStyle: "loves-showing",
-    focusDuration: "20-plus",
-    wantsToLearn: "yes",
-    instrumentsAtHome: ["keyboard-piano"],
-  },
+  // These fields must be at top level, not nested in answers
+  instrumentsAtHome: ["keyboard-piano"],
+  focusDuration: "20-plus",
+  performerStyle: "loves-showing",
+  wantsToLearn: "yes",
+  drawnToInstruments: "yes",
+  hummingSinging: "all-the-time",
+  rhythmPlay: "constantly",
+  dancing: "yes",
 };
 
 export default function EmailPreview() {
