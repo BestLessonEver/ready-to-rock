@@ -36,145 +36,145 @@ export interface ScoringResult {
 }
 
 export function calculateReadinessScore(answers: QuizAnswers): ScoringResult {
-  let score = 50;
+  let score = 30; // Base score (lowered from 50)
 
-  // Pitch (Q2) - heavy weight
+  // Pitch (Q2) - heavy weight (max +8)
   switch (answers.pitch) {
     case 'yes-on-tune':
-      score += 12;
+      score += 8;
       break;
     case 'sometimes':
-      score += 6;
+      score += 4;
       break;
     case 'not-really':
-      score += 3;
+      score += 1;
       break;
   }
 
-  // Rhythm (Q3) - heavy weight
+  // Rhythm (Q3) - heavy weight (max +8)
   switch (answers.rhythm) {
-    case 'yes':
-      score += 12;
-      break;
-    case 'sometimes':
-      score += 6;
-      break;
-    case 'not-yet':
-      score += 2;
-      break;
-  }
-
-  // Memory (Q4) - heavy weight
-  switch (answers.memory) {
-    case 'yes':
-      score += 10;
-      break;
-    case 'sometimes':
-      score += 5;
-      break;
-    case 'not-really':
-      score += 2;
-      break;
-  }
-
-  // Emotional response (Q5) - heavy weight
-  switch (answers.emotionalResponse) {
     case 'yes':
       score += 8;
       break;
     case 'sometimes':
       score += 4;
+      break;
+    case 'not-yet':
+      score += 1;
+      break;
+  }
+
+  // Memory (Q4) - heavy weight (max +7)
+  switch (answers.memory) {
+    case 'yes':
+      score += 7;
+      break;
+    case 'sometimes':
+      score += 3;
+      break;
+    case 'not-really':
+      score += 1;
+      break;
+  }
+
+  // Emotional response (Q5) - medium weight (max +6)
+  switch (answers.emotionalResponse) {
+    case 'yes':
+      score += 6;
+      break;
+    case 'sometimes':
+      score += 3;
       break;
     case 'not-noticed':
       score += 1;
       break;
   }
 
-  // Humming/Singing (Q6) - medium weight
+  // Humming/Singing (Q6) - medium weight (max +6)
   switch (answers.hummingSinging) {
     case 'all-the-time':
-      score += 8;
+      score += 6;
       break;
     case 'sometimes':
-      score += 4;
+      score += 3;
       break;
     case 'rarely':
       score += 1;
       break;
   }
 
-  // Rhythm play (Q7) - medium weight
+  // Rhythm play (Q7) - medium weight (max +6)
   switch (answers.rhythmPlay) {
     case 'constantly':
-      score += 8;
+      score += 6;
       break;
     case 'sometimes':
-      score += 4;
+      score += 3;
       break;
     case 'rarely':
       score += 1;
       break;
   }
 
-  // Dancing (Q8) - medium weight
+  // Dancing (Q8) - medium weight (max +5)
   switch (answers.dancing) {
     case 'yes':
-      score += 6;
+      score += 5;
       break;
     case 'sometimes':
-      score += 3;
-      break;
-    case 'no':
-      score += 1;
-      break;
-  }
-
-  // Drawn to instruments (Q9) - medium weight
-  switch (answers.drawnToInstruments) {
-    case 'yes':
-      score += 6;
-      break;
-    case 'sometimes':
-      score += 3;
-      break;
-    case 'not-really':
-      score += 1;
-      break;
-  }
-
-  // Performer style - light weight
-  switch (answers.performerStyle) {
-    case 'loves-showing':
-      score += 6;
-      break;
-    case 'shy-but-tries':
-      score += 4;
-      break;
-    case 'nervous':
       score += 2;
       break;
+    case 'no':
+      score += 0;
+      break;
   }
 
-  // Focus duration (Q12) - light weight
+  // Drawn to instruments (Q9) - medium weight (max +5)
+  switch (answers.drawnToInstruments) {
+    case 'yes':
+      score += 5;
+      break;
+    case 'sometimes':
+      score += 2;
+      break;
+    case 'not-really':
+      score += 0;
+      break;
+  }
+
+  // Performer style - light weight (max +5)
+  switch (answers.performerStyle) {
+    case 'loves-showing':
+      score += 5;
+      break;
+    case 'shy-but-tries':
+      score += 3;
+      break;
+    case 'nervous':
+      score += 1;
+      break;
+  }
+
+  // Focus duration (Q12) - medium weight (max +7)
   switch (answers.focusDuration) {
     case '20-plus':
-      score += 10;
+      score += 7;
       break;
     case '10-20':
-      score += 6;
+      score += 4;
       break;
     case '5-10':
-      score += 3;
+      score += 2;
       break;
     case 'under-5':
       score += 0;
       break;
   }
 
-  // Motivation - wants to learn (Q13) - light weight
+  // Motivation - wants to learn (Q13) - light weight (max +4)
   switch (answers.wantsToLearn) {
     case 'yes':
-      score += 5;
+      score += 4;
       break;
     case 'not-yet':
       score += 2;
@@ -184,7 +184,7 @@ export function calculateReadinessScore(answers: QuizAnswers): ScoringResult {
       break;
   }
 
-  // Instruments at home (Q14) - light weight
+  // Instruments at home (Q14) - light weight (max +3)
   if (answers.instrumentsAtHome.length > 0 && !answers.instrumentsAtHome.includes('not-yet')) {
     score += 3;
   }
