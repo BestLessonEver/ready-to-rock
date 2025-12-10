@@ -50,7 +50,9 @@ const handler = async (req: Request): Promise<Response> => {
     const submission: QuizSubmission = await req.json();
     console.log("Received submission for:", submission.childName);
 
-    const resultsUrl = `https://ddzzdwzxpssittevvpdi.lovable.app/results/${submission.id}`;
+    // Use environment variable or default to production domain
+    const baseUrl = Deno.env.get("APP_URL") || "https://bestlessonever.com/readiness";
+    const resultsUrl = `${baseUrl}/results/${submission.id}`;
     const bookingUrl = "https://bestlessonever.com/book";
     const formattedDate = new Date(submission.createdAt).toLocaleString("en-US", {
       dateStyle: "medium",

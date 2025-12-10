@@ -14,7 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      submissions: {
+        Row: {
+          action_plan: string[] | null
+          answers: Json
+          band: string
+          band_description: string
+          band_label: string
+          child_name: string
+          city_zip: string | null
+          created_at: string
+          email: string
+          id: string
+          parent_name: string
+          phone: string | null
+          primary_instrument: string
+          score: number
+          secondary_instruments: string[] | null
+        }
+        Insert: {
+          action_plan?: string[] | null
+          answers: Json
+          band: string
+          band_description: string
+          band_label: string
+          child_name: string
+          city_zip?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          parent_name: string
+          phone?: string | null
+          primary_instrument: string
+          score: number
+          secondary_instruments?: string[] | null
+        }
+        Update: {
+          action_plan?: string[] | null
+          answers?: Json
+          band?: string
+          band_description?: string
+          band_label?: string
+          child_name?: string
+          city_zip?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          parent_name?: string
+          phone?: string | null
+          primary_instrument?: string
+          score?: number
+          secondary_instruments?: string[] | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -1,7 +1,91 @@
+import { supabase } from "@/integrations/supabase/client";
 import { Submission } from './scoring';
 
 const STORAGE_KEY = 'music_readiness_submissions';
 
+// Save to database
+export async function saveSubmissionToDb(submission: Submission): Promise<boolean> {
+  try {
+    const { error } = await supabase.from('submissions').insert([{
+      id: submission.id,
+      email: submission.email,
+      parent_name: submission.parentName,
+      child_name: submission.childName,
+      phone: submission.phone || null,
+      city_zip: null,
+      score: submission.score,
+      band: submission.band,
+      band_label: submission.bandLabel,
+      band_description: submission.bandDescription,
+      primary_instrument: submission.primaryInstrument,
+      secondary_instruments: submission.secondaryInstruments,
+      action_plan: submission.actionPlan,
+      answers: JSON.parse(JSON.stringify(submission)),
+    }]);
+
+    if (error) {
+      console.error("Error saving to database:", error);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error("Failed to save submission to database:", err);
+    return false;
+  }
+}
+
+// Fetch from database
+export async function getSubmissionFromDb(id: string): Promise<Submission | null> {
+  try {
+    const { data, error } = await supabase
+      .from('submissions')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error || !data) {
+      console.error("Error fetching from database:", error);
+      return null;
+    }
+
+    // Map database record back to Submission type
+    const answers = data.answers as Record<string, unknown>;
+    return {
+      id: data.id,
+      parentName: data.parent_name,
+      email: data.email,
+      childName: data.child_name,
+      phone: data.phone || '',
+      score: data.score,
+      band: data.band as Submission['band'],
+      bandLabel: data.band_label,
+      bandDescription: data.band_description,
+      primaryInstrument: data.primary_instrument,
+      secondaryInstruments: data.secondary_instruments || [],
+      actionPlan: data.action_plan || [],
+      createdAt: data.created_at,
+      source: 'Music Readiness Score',
+      // Restore quiz answers from stored answers
+      pitch: (answers?.pitch as string) || '',
+      rhythm: (answers?.rhythm as string) || '',
+      memory: (answers?.memory as string) || '',
+      emotionalResponse: (answers?.emotionalResponse as string) || '',
+      hummingSinging: (answers?.hummingSinging as string) || '',
+      rhythmPlay: (answers?.rhythmPlay as string) || '',
+      dancing: (answers?.dancing as string) || '',
+      drawnToInstruments: (answers?.drawnToInstruments as string) || '',
+      performerStyle: (answers?.performerStyle as string) || '',
+      focusDuration: (answers?.focusDuration as string) || '',
+      wantsToLearn: (answers?.wantsToLearn as string) || '',
+      instrumentsAtHome: (answers?.instrumentsAtHome as string[]) || [],
+    };
+  } catch (err) {
+    console.error("Failed to fetch submission from database:", err);
+    return null;
+  }
+}
+
+// Legacy localStorage functions for backwards compatibility
 export function saveSubmission(submission: Submission): void {
   const existing = getAllSubmissions();
   existing.push(submission);
@@ -22,9 +106,3 @@ export function getAllSubmissions(): Submission[] {
     return [];
   }
 }
-
-// TODO: Replace with database integration when Lovable Cloud is enabled
-// This is where you would:
-// 1. Insert into Supabase 'submissions' table
-// 2. Send confirmation email via edge function
-// 3. Trigger any webhooks or notifications
