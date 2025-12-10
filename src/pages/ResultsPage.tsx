@@ -1,6 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getSubmission } from "@/lib/storage";
+import { getSubmission, getSubmissionFromDb } from "@/lib/storage";
 import { Submission } from "@/lib/scoring";
 import { ScoreSummary } from "@/components/results/ScoreSummary";
 import { InstrumentMatch } from "@/components/results/InstrumentMatch";
@@ -22,11 +22,27 @@ const ResultsPage = () => {
   }, []);
 
   useEffect(() => {
-    if (id) {
-      const data = getSubmission(id);
-      setSubmission(data);
-    }
-    setLoading(false);
+    const fetchSubmission = async () => {
+      if (!id) {
+        setLoading(false);
+        return;
+      }
+      
+      // First try localStorage (for immediate access after quiz)
+      const localData = getSubmission(id);
+      if (localData) {
+        setSubmission(localData);
+        setLoading(false);
+        return;
+      }
+      
+      // Fall back to database (for email links)
+      const dbData = await getSubmissionFromDb(id);
+      setSubmission(dbData);
+      setLoading(false);
+    };
+    
+    fetchSubmission();
   }, [id]);
 
   if (loading) {

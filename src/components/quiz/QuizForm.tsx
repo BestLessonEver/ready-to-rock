@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { QuizAnswers, createSubmission, getActionPlanContext, Submission } from "@/lib/scoring";
-import { saveSubmission } from "@/lib/storage";
+import { saveSubmission, saveSubmissionToDb } from "@/lib/storage";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 
@@ -152,7 +152,11 @@ export function QuizForm() {
       submission.actionPlan = aiActionPlan;
     }
     
+    // Save to localStorage for immediate access
     saveSubmission(submission);
+    
+    // Save to database (fire-and-forget for persistence)
+    saveSubmissionToDb(submission);
     
     // Fire-and-forget: send emails without blocking navigation
     sendQuizEmails(submission);
