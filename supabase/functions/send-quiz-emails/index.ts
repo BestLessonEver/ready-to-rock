@@ -234,7 +234,10 @@ const handler = async (req: Request): Promise<Response> => {
     // Check for preview mode
     if (body.preview === true) {
       console.log("Preview mode requested, type:", body.type);
-      const submission = sampleSubmission;
+      // Allow overriding sample data (e.g., with AI-generated action plan)
+      const submission = body.sampleOverride 
+        ? { ...sampleSubmission, ...body.sampleOverride }
+        : sampleSubmission;
       const baseUrl = "https://bestlessonever.com/readiness";
       const resultsUrl = `${baseUrl}/results/${submission.id}`;
       const bookingUrl = "https://bestlessonever.com/book";
