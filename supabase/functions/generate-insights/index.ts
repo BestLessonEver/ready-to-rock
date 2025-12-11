@@ -1,30 +1,41 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface SubmissionData {
-  childName: string;
-  score: number;
-  band: 'emerging' | 'ready-with-support' | 'ready-to-thrive';
-  bandLabel: string;
-  primaryInstrument: string;
-  secondaryInstruments: string[];
-  instrumentsAtHome: string[];
-  pitch: string;
-  rhythm: string;
-  memory: string;
-  emotionalResponse: string;
-  hummingSinging: string;
-  rhythmPlay: string;
-  dancing: string;
-  drawnToInstruments: string;
-  performerStyle: string;
-  focusDuration: string;
-  wantsToLearn: string;
-}
+// Allowed origins for production requests
+const ALLOWED_ORIGINS = [
+  "https://ddzzdwzxpssittevvpdi.lovable.app",
+  "http://localhost:5173",
+  "http://localhost:8080",
+];
+
+// Input validation schema
+const SubmissionDataSchema = z.object({
+  childName: z.string().min(1).max(100),
+  score: z.number().min(0).max(100),
+  band: z.enum(['emerging', 'ready-with-support', 'ready-to-thrive']),
+  bandLabel: z.string().max(100),
+  primaryInstrument: z.string().max(100),
+  secondaryInstruments: z.array(z.string().max(100)).max(5),
+  instrumentsAtHome: z.array(z.string().max(50)).max(10),
+  pitch: z.string().max(50),
+  rhythm: z.string().max(50),
+  memory: z.string().max(50),
+  emotionalResponse: z.string().max(50),
+  hummingSinging: z.string().max(50),
+  rhythmPlay: z.string().max(50),
+  dancing: z.string().max(50),
+  drawnToInstruments: z.string().max(50),
+  performerStyle: z.string().max(50),
+  focusDuration: z.string().max(50),
+  wantsToLearn: z.string().max(50),
+});
+
+type SubmissionData = z.infer<typeof SubmissionDataSchema>;
 
 export interface Insights {
   profileType: string;
@@ -35,12 +46,51 @@ export interface Insights {
   superpower: string;
 }
 
+// Validate request origin
+function isValidOrigin(req: Request): boolean {
+  const origin = req.headers.get("origin");
+  const referer = req.headers.get("referer");
+  
+  if (origin && ALLOWED_ORIGINS.some(allowed => origin.startsWith(allowed))) {
+    return true;
+  }
+  
+  if (referer && ALLOWED_ORIGINS.some(allowed => referer.startsWith(allowed))) {
+    return true;
+  }
+  
+  return false;
+}
+
+// Sanitize string for use in AI prompts to prevent prompt injection
+function sanitizeForPrompt(str: string): string {
+  // Remove potential prompt injection attempts
+  return str
+    .replace(/[<>{}[\]]/g, '')
+    .replace(/\n/g, ' ')
+    .trim()
+    .slice(0, 200); // Limit length
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    // Validate origin
+    const origin = req.headers.get("origin");
+    const referer = req.headers.get("referer");
+    console.log("Request origin:", origin, "referer:", referer);
+    
+    if (!isValidOrigin(req)) {
+      console.warn("Request from unauthorized origin:", origin || referer);
+      return new Response(JSON.stringify({ error: "Unauthorized origin" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const bodyText = await req.text();
     console.log("Request body length:", bodyText?.length || 0);
 
@@ -52,7 +102,27 @@ serve(async (req) => {
       });
     }
 
-    const submission: SubmissionData = JSON.parse(bodyText);
+    // Parse and validate input
+    let parsedBody;
+    try {
+      parsedBody = JSON.parse(bodyText);
+    } catch {
+      return new Response(JSON.stringify({ error: "Invalid JSON" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const validationResult = SubmissionDataSchema.safeParse(parsedBody);
+    if (!validationResult.success) {
+      console.error("Input validation failed:", validationResult.error.errors);
+      return new Response(
+        JSON.stringify({ error: "Invalid input", details: validationResult.error.errors }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const submission = validationResult.data;
     console.log("Generating insights for:", submission.childName);
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -66,8 +136,14 @@ serve(async (req) => {
       .map(i => {
         if (i === 'keyboard-piano') return 'keyboard/piano';
         if (i === 'guitar-ukulele') return 'guitar/ukulele';
-        return i;
+        return sanitizeForPrompt(i);
       });
+
+    // Sanitize all user inputs for the prompt
+    const sanitizedChildName = sanitizeForPrompt(submission.childName);
+    const sanitizedBandLabel = sanitizeForPrompt(submission.bandLabel);
+    const sanitizedPrimaryInstrument = sanitizeForPrompt(submission.primaryInstrument);
+    const sanitizedSecondaryInstruments = submission.secondaryInstruments.map(sanitizeForPrompt).join(', ');
 
     const systemPrompt = `You are a music learning specialist for Best Lesson Ever, a modern student-led music school. Your role is to generate deeply personalized, emotionally resonant insights about a child based on their quiz answers. These insights must feel specific, accurate, and screenshot-worthy. Write using a confident, warm, modern tone. No fluff, no generic statements.
 
@@ -98,10 +174,10 @@ Rules:
 
     const userPrompt = `Generate personalized insights for this child using their quiz submission data:
 
-Child name: ${submission.childName}
-Readiness level: ${submission.bandLabel} (score ${submission.score})
-Primary instrument recommendation: ${submission.primaryInstrument}
-Secondary instruments: ${submission.secondaryInstruments.join(', ')}
+Child name: ${sanitizedChildName}
+Readiness level: ${sanitizedBandLabel} (score ${submission.score})
+Primary instrument recommendation: ${sanitizedPrimaryInstrument}
+Secondary instruments: ${sanitizedSecondaryInstruments}
 
 Traits:
 - Pitch ability: ${formatPitch(submission.pitch)}
@@ -191,7 +267,7 @@ Use the insight rules from the system prompt.`;
   } catch (error) {
     console.error("Error generating insights:", error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
+      JSON.stringify({ error: "An error occurred processing your request" }),
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

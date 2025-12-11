@@ -1,26 +1,62 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface SubmissionData {
-  childName: string;
-  parentName: string;
-  score: number;
-  band: 'emerging' | 'ready-with-support' | 'ready-to-thrive';
-  bandLabel: string;
-  primaryInstrument: string;
-  secondaryInstruments: string[];
-  instrumentsAtHome: string[];
-  focusDuration: string;
-  performerStyle: string;
-  wantsToLearn: string;
-  drawnToInstruments: string;
-  hummingSinging: string;
-  rhythmPlay: string;
-  dancing: string;
+// Allowed origins for production requests
+const ALLOWED_ORIGINS = [
+  "https://ddzzdwzxpssittevvpdi.lovable.app",
+  "http://localhost:5173",
+  "http://localhost:8080",
+];
+
+// Input validation schema
+const SubmissionDataSchema = z.object({
+  childName: z.string().min(1).max(100),
+  parentName: z.string().min(1).max(100),
+  score: z.number().min(0).max(100),
+  band: z.enum(['emerging', 'ready-with-support', 'ready-to-thrive']),
+  bandLabel: z.string().max(100),
+  primaryInstrument: z.string().max(100),
+  secondaryInstruments: z.array(z.string().max(100)).max(5),
+  instrumentsAtHome: z.array(z.string().max(50)).max(10),
+  focusDuration: z.string().max(50),
+  performerStyle: z.string().max(50),
+  wantsToLearn: z.string().max(50),
+  drawnToInstruments: z.string().max(50),
+  hummingSinging: z.string().max(50),
+  rhythmPlay: z.string().max(50),
+  dancing: z.string().max(50),
+});
+
+type SubmissionData = z.infer<typeof SubmissionDataSchema>;
+
+// Validate request origin
+function isValidOrigin(req: Request): boolean {
+  const origin = req.headers.get("origin");
+  const referer = req.headers.get("referer");
+  
+  if (origin && ALLOWED_ORIGINS.some(allowed => origin.startsWith(allowed))) {
+    return true;
+  }
+  
+  if (referer && ALLOWED_ORIGINS.some(allowed => referer.startsWith(allowed))) {
+    return true;
+  }
+  
+  return false;
+}
+
+// Sanitize string for use in AI prompts to prevent prompt injection
+function sanitizeForPrompt(str: string): string {
+  return str
+    .replace(/[<>{}[\]]/g, '')
+    .replace(/\n/g, ' ')
+    .trim()
+    .slice(0, 200);
 }
 
 serve(async (req) => {
@@ -29,6 +65,19 @@ serve(async (req) => {
   }
 
   try {
+    // Validate origin
+    const origin = req.headers.get("origin");
+    const referer = req.headers.get("referer");
+    console.log("Request origin:", origin, "referer:", referer);
+    
+    if (!isValidOrigin(req)) {
+      console.warn("Request from unauthorized origin:", origin || referer);
+      return new Response(JSON.stringify({ error: "Unauthorized origin" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // Read body as text first to handle empty body gracefully
     const bodyText = await req.text();
     console.log("Request body length:", bodyText?.length || 0);
@@ -41,7 +90,27 @@ serve(async (req) => {
       });
     }
 
-    const submission: SubmissionData = JSON.parse(bodyText);
+    // Parse and validate input
+    let parsedBody;
+    try {
+      parsedBody = JSON.parse(bodyText);
+    } catch {
+      return new Response(JSON.stringify({ error: "Invalid JSON" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const validationResult = SubmissionDataSchema.safeParse(parsedBody);
+    if (!validationResult.success) {
+      console.error("Input validation failed:", validationResult.error.errors);
+      return new Response(
+        JSON.stringify({ error: "Invalid input", details: validationResult.error.errors }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const submission = validationResult.data;
     console.log("Generating action plan for:", submission.childName);
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -55,10 +124,16 @@ serve(async (req) => {
       .map(i => {
         if (i === 'keyboard-piano') return 'keyboard/piano';
         if (i === 'guitar-ukulele') return 'guitar/ukulele';
-        return i;
+        return sanitizeForPrompt(i);
       });
     
     const hasInstruments = homeInstruments.length > 0;
+
+    // Sanitize user inputs for the prompt
+    const sanitizedChildName = sanitizeForPrompt(submission.childName);
+    const sanitizedBandLabel = sanitizeForPrompt(submission.bandLabel);
+    const sanitizedPrimaryInstrument = sanitizeForPrompt(submission.primaryInstrument);
+    const sanitizedSecondaryInstruments = submission.secondaryInstruments.map(sanitizeForPrompt).join(', ');
 
     const systemPrompt = `You are a music education advisor for Best Lesson Ever, a modern, student-led music school. Your job is to create bold, modern, fun, highly actionable first-week action plans for parents based on their child's music readiness assessment.
 
@@ -72,7 +147,7 @@ Tone rules:
 Action Plan Structure (always follow this sequence):
 
 1. TONIGHT ACTION (always the same wording):
-   "Tonight, play one of ${submission.childName}'s favorite songs and have them clap to the beat, sing along, or try both at the same time. Take note of how close they are to the rhythm and melody. "
+   "Tonight, play one of ${sanitizedChildName}'s favorite songs and have them clap to the beat, sing along, or try both at the same time. Take note of how close they are to the rhythm and melody. "
 
 2. MICRO-TEST (adaptive based on child traits):
    - If the child hums or sings → Melody Echo Game (sing a tiny 2–3 note pattern and have them echo it)
@@ -88,7 +163,7 @@ Action Plan Structure (always follow this sequence):
 
 4. DISCOVERY MOMENT (always include):
    Instrument Personality Test:
-   "Show quick clips of a drummer, guitarist, pianist, and singer, and ask ${submission.childName}: 'Which one would YOU want to be?'"
+   "Show quick clips of a drummer, guitarist, pianist, and singer, and ask ${sanitizedChildName}: 'Which one would YOU want to be?'"
 
 5. CONFIDENCE MOMENT (adaptive):
    - If they love performing → tiny living-room concert
@@ -98,7 +173,7 @@ Action Plan Structure (always follow this sequence):
    - If creative → 3-word songwriting challenge
 
 6. TRIAL LESSON (always the final bullet):
-   "Sign ${submission.childName} up for a trial lesson at a local music school—an experienced instructor can spot strengths within minutes and give clear next steps."
+   "Sign ${sanitizedChildName} up for a trial lesson at a local music school—an experienced instructor can spot strengths within minutes and give clear next steps."
 
 Other Rules:
 - Always produce 5–6 bullets
@@ -112,10 +187,10 @@ Other Rules:
 
     const userPrompt = `Create a personalized first-week action plan for this child:
 
-Child's name: ${submission.childName}
-Readiness level: ${submission.bandLabel} (score: ${submission.score}/100)
-Recommended instrument: ${submission.primaryInstrument}
-Alternative instruments: ${submission.secondaryInstruments.join(', ')}
+Child's name: ${sanitizedChildName}
+Readiness level: ${sanitizedBandLabel} (score: ${submission.score}/100)
+Recommended instrument: ${sanitizedPrimaryInstrument}
+Alternative instruments: ${sanitizedSecondaryInstruments}
 
 Child traits:
 - Hums/sings during day: ${submission.hummingSinging}
@@ -205,7 +280,7 @@ Remember:
   } catch (error) {
     console.error("Error generating action plan:", error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
+      JSON.stringify({ error: "An error occurred processing your request" }),
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -226,7 +301,7 @@ function formatFocusDuration(value: string): string {
 
 function getDefaultActionPlan(submission: SubmissionData): string[] {
   const plan: string[] = [];
-  const { band, childName, instrumentsAtHome, hummingSinging, dancing, performerStyle } = submission;
+  const { childName, instrumentsAtHome, hummingSinging, dancing, performerStyle } = submission;
 
   // 1. TONIGHT ACTION (always the same)
   plan.push(`Tonight, play one of ${childName}'s favorite songs and have them clap to the beat, sing along, or try both at the same time.`);
