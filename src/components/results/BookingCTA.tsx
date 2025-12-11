@@ -35,7 +35,7 @@ export function BookingCTA() {
         >
           <a href={`tel:${phoneNumber}`}>
             <Phone className="h-5 w-5 mr-2" />
-            Call Us to Book A Free Trial
+            Call 281-940-4101 To Book
           </a>
         </Button>
         <Button 
@@ -46,7 +46,7 @@ export function BookingCTA() {
         >
           <a href={selfBookUrl} target="_blank" rel="noopener noreferrer">
             <Calendar className="h-5 w-5 mr-2" />
-            Self Book Your Free Trial
+            Look At Our Availible Timeslots
             <ArrowRight className="h-4 w-4 ml-2 transition-transform group-hover:translate-x-1" />
           </a>
         </Button>
@@ -56,7 +56,7 @@ export function BookingCTA() {
       <p className="text-center text-sm text-muted-foreground mt-6">
         Prefer to browse first?{" "}
         <a 
-          href="https://bestlessonever.com" 
+          href="https://bestlessonever.com/friendswood" 
           target="_blank" 
           rel="noopener noreferrer"
           className="text-primary hover:underline"
