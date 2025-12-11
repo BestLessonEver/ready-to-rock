@@ -4,6 +4,7 @@ import { getSubmission, getSubmissionFromDb } from "@/lib/storage";
 import { Submission } from "@/lib/scoring";
 import { ScoreSummary } from "@/components/results/ScoreSummary";
 import { InstrumentMatch } from "@/components/results/InstrumentMatch";
+import { InsightsSection } from "@/components/results/InsightsSection";
 import { ActionPlan } from "@/components/results/ActionPlan";
 import { BookingCTA } from "@/components/results/BookingCTA";
 import { EmailNotice } from "@/components/results/EmailNotice";
@@ -94,6 +95,9 @@ const ResultsPage = () => {
 
           {/* Instrument Match */}
           <InstrumentMatch submission={submission} />
+
+          {/* AI-Generated Insights */}
+          <InsightsSection submission={submission} />
 
           {/* Action Plan */}
           <ActionPlan submission={submission} />
