@@ -17,6 +17,15 @@ const ALLOWED_ORIGINS = [
 ];
 
 // Input validation schema
+const InsightsSchema = z.object({
+  profileType: z.string().max(500),
+  strengths: z.array(z.string().max(200)).max(5),
+  learningStyle: z.string().max(500),
+  performerType: z.string().max(200),
+  instrumentReasoning: z.string().max(500),
+  superpower: z.string().max(100),
+}).optional();
+
 const QuizSubmissionSchema = z.object({
   id: z.string().uuid(),
   parentName: z.string().min(1).max(100),
@@ -45,6 +54,7 @@ const QuizSubmissionSchema = z.object({
   wantsToLearn: z.string().max(50).optional().default(""),
   favoriteSongBehavior: z.string().max(50).optional().default(""),
   instrumentsAtHome: z.array(z.string().max(50)).max(10).optional().default([]),
+  insights: InsightsSchema,
 });
 
 type QuizSubmission = z.infer<typeof QuizSubmissionSchema>;
@@ -85,6 +95,18 @@ const sampleSubmission: QuizSubmission = {
   wantsToLearn: "yes",
   favoriteSongBehavior: "yes",
   instrumentsAtHome: ["keyboard-piano"],
+  insights: {
+    superpower: "Beat Explorer",
+    profileType: "Emma is a natural rhythm-driven learner with strong pitch awareness and an innate love of musical expression.",
+    strengths: [
+      "Exceptional sense of rhythm and timing",
+      "Strong emotional connection to music",
+      "Natural ability to remember melodies quickly"
+    ],
+    learningStyle: "Emma learns best through hands-on exploration and movement. She thrives when lessons incorporate physical engagement and immediate feedback.",
+    performerType: "A confident performer who loves the spotlight and gains energy from sharing music with others.",
+    instrumentReasoning: "Piano is ideal for Emma because it combines her strong rhythm skills with visual learning. The keyboard layout helps her see patterns, and she can explore both melody and rhythm simultaneously."
+  },
 };
 
 // Helper functions for generating email HTML
@@ -189,6 +211,72 @@ function generateParentEmailHtml(submission: QuizSubmission, resultsUrl: string,
     .map(item => `<li style="margin-bottom: 8px;">${sanitizeForHtml(item)}</li>`)
     .join("");
 
+  const instrumentEmojis: Record<string, string> = {
+    Piano: "🎹",
+    Guitar: "🎸",
+    Drums: "🥁",
+    Voice: "🎤",
+    Ukulele: "🪕",
+  };
+  const primaryEmoji = instrumentEmojis[submission.primaryInstrument] || "🎵";
+
+  // Generate insights section HTML if insights exist
+  const insightsHtml = submission.insights ? `
+      <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin: 24px 0;">
+        <div style="margin-bottom: 16px;">
+          <span style="font-size: 20px;">✨</span>
+          <span style="font-size: 18px; font-weight: 600; color: #1a1a1a; margin-left: 8px;">Meet ${sanitizeForHtml(submission.childName)}'s Musical Profile</span>
+        </div>
+
+        <!-- Musical Superpower Badge -->
+        <div style="background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); padding: 16px; border-radius: 12px; margin-bottom: 16px;">
+          <table cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td style="vertical-align: middle; padding-right: 12px;">
+                <span style="font-size: 24px;">⚡</span>
+              </td>
+              <td style="vertical-align: middle;">
+                <p style="color: rgba(255,255,255,0.8); margin: 0; font-size: 12px;">Musical Superpower</p>
+                <p style="color: white; margin: 0; font-weight: bold; font-size: 18px;">${sanitizeForHtml(submission.insights.superpower)}</p>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Profile Type -->
+        <div style="margin-bottom: 16px;">
+          <p style="font-weight: 600; color: #374151; margin: 0 0 4px 0;">🎵 Profile Type</p>
+          <p style="color: #6b7280; margin: 0; line-height: 1.5;">${sanitizeForHtml(submission.insights.profileType)}</p>
+        </div>
+
+        <!-- Strengths -->
+        <div style="margin-bottom: 16px;">
+          <p style="font-weight: 600; color: #374151; margin: 0 0 8px 0;">⭐ Top Musical Strengths</p>
+          <ul style="color: #6b7280; margin: 0; padding-left: 20px; line-height: 1.6;">
+            ${submission.insights.strengths.map(s => `<li>${sanitizeForHtml(s)}</li>`).join('')}
+          </ul>
+        </div>
+
+        <!-- Learning Style -->
+        <div style="margin-bottom: 16px;">
+          <p style="font-weight: 600; color: #374151; margin: 0 0 4px 0;">🧠 How ${sanitizeForHtml(submission.childName)} Learns Best</p>
+          <p style="color: #6b7280; margin: 0; line-height: 1.5;">${sanitizeForHtml(submission.insights.learningStyle)}</p>
+        </div>
+
+        <!-- Performer Profile -->
+        <div style="margin-bottom: 16px;">
+          <p style="font-weight: 600; color: #374151; margin: 0 0 4px 0;">⭐ Performer Profile</p>
+          <p style="color: #6b7280; margin: 0; line-height: 1.5;">${sanitizeForHtml(submission.insights.performerType)}</p>
+        </div>
+
+        <!-- Instrument Reasoning -->
+        <div style="background: #eff6ff; padding: 16px; border-radius: 8px;">
+          <p style="font-weight: 600; color: #374151; margin: 0 0 4px 0;">💡 Why ${sanitizeForHtml(submission.primaryInstrument)} Fits ${sanitizeForHtml(submission.childName)}</p>
+          <p style="color: #6b7280; margin: 0; line-height: 1.5;">${sanitizeForHtml(submission.insights.instrumentReasoning)}</p>
+        </div>
+      </div>
+  ` : '';
+
   return `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
       <h1 style="color: #1a1a1a;">
@@ -209,19 +297,21 @@ function generateParentEmailHtml(submission: QuizSubmission, resultsUrl: string,
       </div>
 
       <div style="background: #eff6ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
-        <h2 style="color: #1e40af; margin-top: 0;">Best-Fit Instrument: ${sanitizeForHtml(submission.primaryInstrument)}</h2>
-        <p style="color: #374151;">Also consider: ${submission.secondaryInstruments.map(i => sanitizeForHtml(i)).join(", ")}</p>
+        <div style="margin-bottom: 8px;">
+          <span style="font-size: 24px;">${primaryEmoji}</span>
+          <span style="background: #3b82f6; color: white; font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 4px; margin-left: 8px;">TOP PICK</span>
+        </div>
+        <h2 style="color: #1e40af; margin-top: 8px; margin-bottom: 8px;">Best-Fit Instrument: ${sanitizeForHtml(submission.primaryInstrument)}</h2>
+        <p style="color: #374151; margin: 0;">Also consider: ${submission.secondaryInstruments.map(i => sanitizeForHtml(i)).join(", ")}</p>
       </div>
+
+      ${insightsHtml}
 
       <div style="margin: 24px 0;">
         <h2 style="color: #1a1a1a;">Your Action Plan</h2>
         <ul style="color: #374151; line-height: 1.8; padding-left: 20px;">
           ${actionPlanHtml}
         </ul>
-      </div>
-
-      <div style="margin: 24px 0;">
-        <a href="${resultsUrl}" style="display: inline-block; background: #6b7280; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500;">View Full Results Online</a>
       </div>
 
       <div style="background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); padding: 24px; border-radius: 12px; margin: 32px 0; text-align: center;">

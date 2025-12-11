@@ -339,11 +339,21 @@ export function generateActionPlan(answers: QuizAnswers, result: ScoringResult):
   return plan.slice(0, 6);
 }
 
+export interface Insights {
+  profileType: string;
+  strengths: string[];
+  learningStyle: string;
+  performerType: string;
+  instrumentReasoning: string;
+  superpower: string;
+}
+
 export interface Submission extends QuizAnswers, ScoringResult {
   id: string;
   createdAt: string;
   actionPlan: string[];
   source: string;
+  insights?: Insights;
 }
 
 // Create initial submission with fallback action plan (can be updated with AI plan later)

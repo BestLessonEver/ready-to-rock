@@ -6,7 +6,7 @@ import { OptionButton } from "./OptionButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { QuizAnswers, createSubmission, getActionPlanContext, Submission } from "@/lib/scoring";
+import { QuizAnswers, createSubmission, getActionPlanContext, Submission, Insights } from "@/lib/scoring";
 import { saveSubmission, saveSubmissionToDb, savePartialSubmission, updateSubmissionToComplete } from "@/lib/storage";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
@@ -136,6 +136,57 @@ export function QuizForm() {
     }
   };
 
+  const generateAIInsights = async (submission: Submission): Promise<Insights | null> => {
+    try {
+      const payload = {
+        childName: submission.childName,
+        score: submission.score,
+        band: submission.band,
+        bandLabel: submission.bandLabel,
+        primaryInstrument: submission.primaryInstrument,
+        secondaryInstruments: submission.secondaryInstruments,
+        instrumentsAtHome: submission.instrumentsAtHome,
+        pitch: submission.pitch,
+        rhythm: submission.rhythm,
+        memory: submission.memory,
+        emotionalResponse: submission.emotionalResponse,
+        hummingSinging: submission.hummingSinging,
+        rhythmPlay: submission.rhythmPlay,
+        dancing: submission.dancing,
+        drawnToInstruments: submission.drawnToInstruments,
+        performerStyle: submission.performerStyle,
+        focusDuration: submission.focusDuration,
+        wantsToLearn: submission.wantsToLearn,
+      };
+
+      console.log("Generating AI insights...");
+      const { data, error } = await supabase.functions.invoke("generate-insights", {
+        body: payload,
+      });
+
+      if (error) {
+        console.error("Insights edge function error:", error);
+        return null;
+      }
+
+      if (data?.error) {
+        console.error("AI insights error:", data.error);
+        return null;
+      }
+
+      if (data?.insights) {
+        console.log("AI insights generated:", data.insights);
+        return data.insights;
+      }
+
+      console.warn("Unexpected insights response format:", data);
+      return null;
+    } catch (err) {
+      console.error("Failed to generate insights:", err);
+      return null;
+    }
+  };
+
   const handleSubmit = async () => {
     if (answers.childName.trim() === "") {
       setErrors({ childName: "Please enter your child's name" });
@@ -152,10 +203,18 @@ export function QuizForm() {
       submission.id = partialSubmissionId.current;
     }
     
-    // Try to get AI-generated action plan
-    const aiActionPlan = await generateAIActionPlan(submission);
+    // Try to get AI-generated action plan and insights in parallel
+    const [aiActionPlan, aiInsights] = await Promise.all([
+      generateAIActionPlan(submission),
+      generateAIInsights(submission),
+    ]);
+    
     if (aiActionPlan) {
       submission.actionPlan = aiActionPlan;
+    }
+    
+    if (aiInsights) {
+      submission.insights = aiInsights;
     }
     
     // Save to localStorage for immediate access
