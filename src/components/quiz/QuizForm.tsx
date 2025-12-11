@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ProgressBar } from "./ProgressBar";
 import { QuizCard, QuizCardTitle } from "./QuizCard";
@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { QuizAnswers, createSubmission, getActionPlanContext, Submission } from "@/lib/scoring";
-import { saveSubmission, saveSubmissionToDb } from "@/lib/storage";
+import { saveSubmission, saveSubmissionToDb, savePartialSubmission, updateSubmissionToComplete } from "@/lib/storage";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 
@@ -37,6 +37,7 @@ export function QuizForm() {
   const [answers, setAnswers] = useState<QuizAnswers>(initialAnswers);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const partialSubmissionId = useRef<string | null>(null);
   const navigate = useNavigate();
 
   const updateAnswer = <K extends keyof QuizAnswers>(key: K, value: QuizAnswers[K]) => {
@@ -146,6 +147,11 @@ export function QuizForm() {
     // Create initial submission with fallback action plan
     const submission = createSubmission(answers);
     
+    // If we have a partial submission, use that ID
+    if (partialSubmissionId.current) {
+      submission.id = partialSubmissionId.current;
+    }
+    
     // Try to get AI-generated action plan
     const aiActionPlan = await generateAIActionPlan(submission);
     if (aiActionPlan) {
@@ -155,8 +161,12 @@ export function QuizForm() {
     // Save to localStorage for immediate access
     saveSubmission(submission);
     
-    // Save to database (fire-and-forget for persistence)
-    saveSubmissionToDb(submission);
+    // Save to database - update if partial exists, otherwise create new
+    if (partialSubmissionId.current) {
+      updateSubmissionToComplete(partialSubmissionId.current, submission);
+    } else {
+      saveSubmissionToDb(submission);
+    }
     
     // Fire-and-forget: send emails without blocking navigation
     sendQuizEmails(submission);
@@ -164,11 +174,24 @@ export function QuizForm() {
     navigate(`/results/${submission.id}`);
   };
 
-  const nextStep = () => {
+  const nextStep = async () => {
     if (step === 6 && !validateEmail(answers.email)) {
       setErrors({ email: "Please enter a valid email address" });
       return;
     }
+    
+    // Save partial submission when leaving step 6 (email capture)
+    if (step === 6 && canProceed() && !partialSubmissionId.current) {
+      const id = await savePartialSubmission({
+        parentName: answers.parentName,
+        email: answers.email,
+        lastStep: 6,
+      });
+      if (id) {
+        partialSubmissionId.current = id;
+      }
+    }
+    
     if (step < TOTAL_STEPS && canProceed()) {
       setStep(step + 1);
     }
