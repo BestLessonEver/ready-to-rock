@@ -17,6 +17,7 @@ const initialAnswers: QuizAnswers = {
   parentName: "",
   email: "",
   childName: "",
+  childAge: "",
   phone: "",
   pitch: "",
   rhythm: "",
@@ -78,7 +79,7 @@ export function QuizForm() {
       case 12: return answers.focusDuration !== "";
       case 13: return answers.wantsToLearn !== "";
       case 14: return answers.instrumentsAtHome.length > 0;
-      case 15: return answers.childName.trim() !== "";
+      case 15: return answers.childName.trim() !== "" && answers.childAge !== "";
       default: return false;
     }
   };
@@ -146,6 +147,7 @@ export function QuizForm() {
         primaryInstrument: submission.primaryInstrument,
         secondaryInstruments: submission.secondaryInstruments,
         instrumentsAtHome: submission.instrumentsAtHome,
+        childAge: submission.childAge,
         pitch: submission.pitch,
         rhythm: submission.rhythm,
         memory: submission.memory,
@@ -640,7 +642,7 @@ export function QuizForm() {
         {step === 15 && (
           <QuizCard key="step15">
             <QuizCardTitle subtitle="Almost Done!">
-              What's your child's name?
+              What's your child's name and age?
             </QuizCardTitle>
             <div className="space-y-5">
               <div className="space-y-2">
@@ -655,6 +657,38 @@ export function QuizForm() {
                 {errors.childName && (
                   <p className="text-sm text-destructive">{errors.childName}</p>
                 )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="childAge">Child's age</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  <OptionButton
+                    label="4-5 years"
+                    selected={answers.childAge === "4-5"}
+                    onClick={() => updateAnswer("childAge", "4-5")}
+                  />
+                  <OptionButton
+                    label="6-7 years"
+                    selected={answers.childAge === "6-7"}
+                    onClick={() => updateAnswer("childAge", "6-7")}
+                  />
+                  <OptionButton
+                    label="8-9 years"
+                    selected={answers.childAge === "8-9"}
+                    onClick={() => updateAnswer("childAge", "8-9")}
+                  />
+                  <OptionButton
+                    label="10-11 years"
+                    selected={answers.childAge === "10-11"}
+                    onClick={() => updateAnswer("childAge", "10-11")}
+                  />
+                  <OptionButton
+                    label="12+ years"
+                    selected={answers.childAge === "12-plus"}
+                    onClick={() => updateAnswer("childAge", "12-plus")}
+                    className="col-span-2"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">

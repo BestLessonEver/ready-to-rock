@@ -6,9 +6,10 @@ interface OptionButtonProps {
   selected: boolean;
   onClick: () => void;
   multiSelect?: boolean;
+  className?: string;
 }
 
-export function OptionButton({ label, selected, onClick, multiSelect = false }: OptionButtonProps) {
+export function OptionButton({ label, selected, onClick, multiSelect = false, className }: OptionButtonProps) {
   return (
     <button
       type="button"
@@ -19,7 +20,8 @@ export function OptionButton({ label, selected, onClick, multiSelect = false }: 
         "focus:outline-none focus:ring-2 focus:ring-primary/20",
         selected
           ? "border-primary bg-primary/10 text-foreground"
-          : "border-border bg-card text-foreground"
+          : "border-border bg-card text-foreground",
+        className
       )}
     >
       <span className="font-medium">{label}</span>

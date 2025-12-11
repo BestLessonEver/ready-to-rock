@@ -21,6 +21,7 @@ export type Database = {
           band: string
           band_description: string
           band_label: string
+          child_age: string | null
           child_name: string
           city_zip: string | null
           created_at: string
@@ -41,6 +42,7 @@ export type Database = {
           band: string
           band_description: string
           band_label: string
+          child_age?: string | null
           child_name: string
           city_zip?: string | null
           created_at?: string
@@ -61,6 +63,7 @@ export type Database = {
           band?: string
           band_description?: string
           band_label?: string
+          child_age?: string | null
           child_name?: string
           city_zip?: string | null
           created_at?: string

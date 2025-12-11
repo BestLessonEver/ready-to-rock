@@ -18,6 +18,7 @@ const ALLOWED_ORIGINS = [
 // Input validation schema
 const SubmissionDataSchema = z.object({
   childName: z.string().min(1).max(100),
+  childAge: z.string().max(20).optional(),
   score: z.number().min(0).max(100),
   band: z.enum(['emerging', 'ready-with-support', 'ready-to-thrive']),
   bandLabel: z.string().max(100),
@@ -174,9 +175,12 @@ Rules:
   }
 - No markdown, no additional text.`;
 
+    const childAge = submission.childAge ? formatAge(submission.childAge) : 'Not specified';
+
     const userPrompt = `Generate personalized insights for this child using their quiz submission data:
 
 Child name: ${sanitizedChildName}
+Child age: ${childAge}
 Readiness level: ${sanitizedBandLabel} (score ${submission.score})
 Primary instrument recommendation: ${sanitizedPrimaryInstrument}
 Secondary instruments: ${sanitizedSecondaryInstruments}
@@ -279,6 +283,17 @@ Use the insight rules from the system prompt.`;
 });
 
 // Format helper functions
+function formatAge(value: string): string {
+  switch (value) {
+    case '4-5': return '4-5 years old';
+    case '6-7': return '6-7 years old';
+    case '8-9': return '8-9 years old';
+    case '10-11': return '10-11 years old';
+    case '12-plus': return '12 years old or older';
+    default: return value;
+  }
+}
+
 function formatPitch(value: string): string {
   switch (value) {
     case 'yes-on-tune': return 'Can sing on tune';
