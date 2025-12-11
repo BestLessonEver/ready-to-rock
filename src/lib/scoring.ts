@@ -3,6 +3,7 @@ export interface QuizAnswers {
   parentName: string;
   email: string;
   childName: string;
+  childAge: string;
   phone: string;
 
   // Musical aptitude questions
