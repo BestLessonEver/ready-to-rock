@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.generate-insights]
 verify_jwt = false
+
+[functions.send-partial-digest]
+verify_jwt = false
