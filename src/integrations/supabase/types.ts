@@ -26,11 +26,13 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          last_step: number | null
           parent_name: string
           phone: string | null
           primary_instrument: string
           score: number
           secondary_instruments: string[] | null
+          status: string
         }
         Insert: {
           action_plan?: string[] | null
@@ -43,11 +45,13 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
+          last_step?: number | null
           parent_name: string
           phone?: string | null
           primary_instrument: string
           score: number
           secondary_instruments?: string[] | null
+          status?: string
         }
         Update: {
           action_plan?: string[] | null
@@ -60,11 +64,13 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          last_step?: number | null
           parent_name?: string
           phone?: string | null
           primary_instrument?: string
           score?: number
           secondary_instruments?: string[] | null
+          status?: string
         }
         Relationships: []
       }

@@ -3,7 +3,78 @@ import { Submission } from './scoring';
 
 const STORAGE_KEY = 'music_readiness_submissions';
 
-// Save to database
+// Save partial submission when email is captured (step 6)
+export async function savePartialSubmission(data: {
+  parentName: string;
+  email: string;
+  lastStep: number;
+}): Promise<string | null> {
+  try {
+    const id = crypto.randomUUID();
+    const { error } = await supabase.from('submissions').insert([{
+      id,
+      email: data.email,
+      parent_name: data.parentName,
+      child_name: 'Unknown', // Placeholder until they complete
+      phone: null,
+      city_zip: null,
+      score: 0,
+      band: 'unknown',
+      band_label: 'Incomplete',
+      band_description: 'Quiz not completed',
+      primary_instrument: 'Unknown',
+      secondary_instruments: [],
+      action_plan: [],
+      answers: { parentName: data.parentName, email: data.email },
+      status: 'partial',
+      last_step: data.lastStep,
+    }]);
+
+    if (error) {
+      console.error("Error saving partial submission:", error);
+      return null;
+    }
+    console.log("Partial lead saved:", id);
+    return id;
+  } catch (err) {
+    console.error("Failed to save partial submission:", err);
+    return null;
+  }
+}
+
+// Update partial submission to complete
+export async function updateSubmissionToComplete(id: string, submission: Submission): Promise<boolean> {
+  try {
+    const { error } = await supabase.from('submissions').update({
+      email: submission.email,
+      parent_name: submission.parentName,
+      child_name: submission.childName,
+      phone: submission.phone || null,
+      score: submission.score,
+      band: submission.band,
+      band_label: submission.bandLabel,
+      band_description: submission.bandDescription,
+      primary_instrument: submission.primaryInstrument,
+      secondary_instruments: submission.secondaryInstruments,
+      action_plan: submission.actionPlan,
+      answers: JSON.parse(JSON.stringify(submission)),
+      status: 'complete',
+      last_step: 15,
+    }).eq('id', id);
+
+    if (error) {
+      console.error("Error updating submission:", error);
+      return false;
+    }
+    console.log("Submission completed:", id);
+    return true;
+  } catch (err) {
+    console.error("Failed to update submission:", err);
+    return false;
+  }
+}
+
+// Save to database (new complete submission)
 export async function saveSubmissionToDb(submission: Submission): Promise<boolean> {
   try {
     const { error } = await supabase.from('submissions').insert([{
@@ -21,6 +92,8 @@ export async function saveSubmissionToDb(submission: Submission): Promise<boolea
       secondary_instruments: submission.secondaryInstruments,
       action_plan: submission.actionPlan,
       answers: JSON.parse(JSON.stringify(submission)),
+      status: 'complete',
+      last_step: 15,
     }]);
 
     if (error) {
