@@ -207,7 +207,11 @@ function generateParentEmailHtml(submission: QuizSubmission, resultsUrl: string,
       <div style="background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); padding: 24px; border-radius: 12px; margin: 32px 0; text-align: center;">
         <h2 style="color: white; margin-top: 0;">Ready to Get Started?</h2>
         <p style="color: rgba(255,255,255,0.9); margin-bottom: 16px;">Book a free trial lesson with Best Lesson Ever!</p>
-        <a href="${bookingUrl}" style="display: inline-block; background: white; color: #3b82f6; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">Book a Free Trial</a>
+        <div style="display: flex; flex-direction: column; gap: 12px; align-items: center;">
+          <a href="tel:2819404101" style="display: inline-block; background: white; color: #3b82f6; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; width: 280px; box-sizing: border-box;">📞 Call Us to Book A Free Trial</a>
+          <a href="${bookingUrl}" style="display: inline-block; background: transparent; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; border: 2px solid white; width: 280px; box-sizing: border-box;">📅 Self Book Your Free Trial</a>
+        </div>
+        <p style="color: rgba(255,255,255,0.8); margin-top: 12px; font-size: 14px;">281.940.4101</p>
       </div>
 
       <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 32px;">

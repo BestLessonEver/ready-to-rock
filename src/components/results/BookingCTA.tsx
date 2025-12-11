@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Calendar, ArrowRight, Phone } from "lucide-react";
 
 export function BookingCTA() {
-  // Placeholder URL - replace with actual booking link
-  const bookingUrl = "https://bestlessonever.opus1.io/w/freetrial";
+  const selfBookUrl = "https://bestlessonever.opus1.io/w/freetrial";
+  const phoneNumber = "2819404101";
 
   return (
     <div 
@@ -33,9 +33,20 @@ export function BookingCTA() {
           asChild
           className="group"
         >
-          <a href={bookingUrl} target="_blank" rel="noopener noreferrer">
+          <a href={`tel:${phoneNumber}`}>
             <Phone className="h-5 w-5 mr-2" />
-            Book a Free Trial
+            Call Us to Book A Free Trial
+          </a>
+        </Button>
+        <Button 
+          size="lg" 
+          variant="outline" 
+          asChild
+          className="group border-primary/30 hover:bg-primary/10"
+        >
+          <a href={selfBookUrl} target="_blank" rel="noopener noreferrer">
+            <Calendar className="h-5 w-5 mr-2" />
+            Self Book Your Free Trial
             <ArrowRight className="h-4 w-4 ml-2 transition-transform group-hover:translate-x-1" />
           </a>
         </Button>
