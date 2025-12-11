@@ -24,6 +24,7 @@ export type Database = {
           child_name: string
           city_zip: string | null
           created_at: string
+          digest_sent_at: string | null
           email: string
           id: string
           last_step: number | null
@@ -43,6 +44,7 @@ export type Database = {
           child_name: string
           city_zip?: string | null
           created_at?: string
+          digest_sent_at?: string | null
           email: string
           id?: string
           last_step?: number | null
@@ -62,6 +64,7 @@ export type Database = {
           child_name?: string
           city_zip?: string | null
           created_at?: string
+          digest_sent_at?: string | null
           email?: string
           id?: string
           last_step?: number | null
