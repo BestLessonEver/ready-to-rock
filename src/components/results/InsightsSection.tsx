@@ -1,100 +1,17 @@
-import { useEffect, useState } from "react";
 import { Submission } from "@/lib/scoring";
-import { supabase } from "@/integrations/supabase/client";
 import { Sparkles, Music, Brain, Star, Lightbulb, Zap } from "lucide-react";
-import { toast } from "sonner";
-
-interface Insights {
-  profileType: string;
-  strengths: string[];
-  learningStyle: string;
-  performerType: string;
-  instrumentReasoning: string;
-  superpower: string;
-}
 
 interface InsightsSectionProps {
   submission: Submission;
 }
 
 export function InsightsSection({ submission }: InsightsSectionProps) {
-  const [insights, setInsights] = useState<Insights | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Use pre-generated insights from submission - no API call needed
+  const insights = submission.insights;
 
-  useEffect(() => {
-    const fetchInsights = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const payload = {
-          childName: submission.childName,
-          score: submission.score,
-          band: submission.band,
-          bandLabel: submission.bandLabel,
-          primaryInstrument: submission.primaryInstrument,
-          secondaryInstruments: submission.secondaryInstruments,
-          instrumentsAtHome: submission.instrumentsAtHome,
-          pitch: submission.pitch,
-          rhythm: submission.rhythm,
-          memory: submission.memory,
-          emotionalResponse: submission.emotionalResponse,
-          hummingSinging: submission.hummingSinging,
-          rhythmPlay: submission.rhythmPlay,
-          dancing: submission.dancing,
-          drawnToInstruments: submission.drawnToInstruments,
-          performerStyle: submission.performerStyle,
-          focusDuration: submission.focusDuration,
-          wantsToLearn: submission.wantsToLearn,
-        };
-
-        const { data, error: fnError } = await supabase.functions.invoke('generate-insights', {
-          body: payload,
-        });
-
-        if (fnError) {
-          console.error('Error fetching insights:', fnError);
-          throw new Error(fnError.message || 'Failed to generate insights');
-        }
-
-        if (data?.error) {
-          throw new Error(data.error);
-        }
-
-        if (data?.insights) {
-          setInsights(data.insights);
-        }
-      } catch (err) {
-        console.error('Error generating insights:', err);
-        setError(err instanceof Error ? err.message : 'Failed to generate insights');
-        toast.error('Unable to generate personalized insights');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchInsights();
-  }, [submission]);
-
-  if (loading) {
-    return (
-      <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
-        <div className="flex items-center gap-2 mb-4">
-          <Sparkles className="h-5 w-5 text-primary animate-pulse" />
-          <h2 className="text-xl font-bold text-foreground">Generating Musical Profile...</h2>
-        </div>
-        <div className="space-y-4">
-          <div className="h-4 bg-muted rounded animate-pulse" />
-          <div className="h-4 bg-muted rounded animate-pulse w-3/4" />
-          <div className="h-4 bg-muted rounded animate-pulse w-5/6" />
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !insights) {
-    return null; // Don't show section if there's an error
+  // Don't render if no insights available
+  if (!insights) {
+    return null;
   }
 
   return (
