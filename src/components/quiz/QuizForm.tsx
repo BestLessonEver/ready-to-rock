@@ -528,11 +528,6 @@ export function QuizForm() {
                 onClick={() => selectAndAdvance("wantsToLearn", "yes")}
               />
               <OptionButton
-                label="Not yet"
-                selected={answers.wantsToLearn === "not-yet"}
-                onClick={() => selectAndAdvance("wantsToLearn", "not-yet")}
-              />
-              <OptionButton
                 label="No"
                 selected={answers.wantsToLearn === "no"}
                 onClick={() => selectAndAdvance("wantsToLearn", "no")}
@@ -549,13 +544,13 @@ export function QuizForm() {
             </QuizCardTitle>
             <div className="space-y-2">
               <OptionButton
-                label="Keyboard or piano"
+                label="Piano"
                 selected={answers.instrumentsAtHome.includes("keyboard-piano")}
                 onClick={() => toggleArrayItem("instrumentsAtHome", "keyboard-piano")}
                 multiSelect
               />
               <OptionButton
-                label="Guitar or ukulele"
+                label="Guitar / Ukulele"
                 selected={answers.instrumentsAtHome.includes("guitar-ukulele")}
                 onClick={() => toggleArrayItem("instrumentsAtHome", "guitar-ukulele")}
                 multiSelect
@@ -652,7 +647,7 @@ export function QuizForm() {
                 Calculating...
               </>
             ) : (
-              "See My Child's Music Readiness Score"
+              "See My Child's Results"
             )}
           </Button>
         )}
