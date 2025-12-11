@@ -242,7 +242,7 @@ const handler = async (req: Request): Promise<Response> => {
       const submission = body.sampleOverride 
         ? { ...sampleSubmission, ...body.sampleOverride }
         : sampleSubmission;
-      const baseUrl = "https://bestlessonever.com/readiness";
+      const baseUrl = "https://ddzzdwzxpssittevvpdi.lovable.app";
       const resultsUrl = `${baseUrl}/results/${submission.id}`;
       const bookingUrl = "https://bestlessonever.com/book";
       const formattedDate = new Date(submission.createdAt).toLocaleString("en-US", {
@@ -268,7 +268,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Received submission for:", submission.childName);
 
     // Use environment variable or default to production domain
-    const baseUrl = Deno.env.get("APP_URL") || "https://bestlessonever.com/readiness";
+    const baseUrl = Deno.env.get("APP_URL") || "https://ddzzdwzxpssittevvpdi.lovable.app";
     const resultsUrl = `${baseUrl}/results/${submission.id}`;
     const bookingUrl = "https://bestlessonever.com/book";
     const formattedDate = new Date(submission.createdAt).toLocaleString("en-US", {
