@@ -9,6 +9,8 @@ const corsHeaders = {
 // Allowed origins for production requests
 const ALLOWED_ORIGINS = [
   "https://ddzzdwzxpssittevvpdi.lovable.app",
+  "https://preview--score-my-sound.lovable.app",
+  "https://score-my-sound.lovable.app",
   "http://localhost:5173",
   "http://localhost:8080",
 ];
