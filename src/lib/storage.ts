@@ -109,37 +109,41 @@ export async function saveSubmissionToDb(submission: Submission): Promise<boolea
   }
 }
 
-// Fetch from database
+// Fetch from database via secure edge function
 export async function getSubmissionFromDb(id: string): Promise<Submission | null> {
   try {
-    const { data, error } = await supabase
-      .from('submissions')
-      .select('*')
-      .eq('id', id)
-      .maybeSingle();
+    const { data, error } = await supabase.functions.invoke('get-submission', {
+      body: { id }
+    });
 
-    if (error || !data) {
-      console.error("Error fetching from database:", error);
+    if (error) {
+      console.error("Error fetching from edge function:", error);
       return null;
     }
 
+    if (!data?.submission) {
+      return null;
+    }
+
+    const row = data.submission;
+    const answers = row.answers as Record<string, unknown>;
+
     // Map database record back to Submission type
-    const answers = data.answers as Record<string, unknown>;
     return {
-      id: data.id,
-      parentName: data.parent_name,
-      email: data.email,
-      childName: data.child_name,
-      childAge: (data as Record<string, unknown>).child_age as string || '',
-      phone: data.phone || '',
-      score: data.score,
-      band: data.band as Submission['band'],
-      bandLabel: data.band_label,
-      bandDescription: data.band_description,
-      primaryInstrument: data.primary_instrument,
-      secondaryInstruments: data.secondary_instruments || [],
-      actionPlan: data.action_plan || [],
-      createdAt: data.created_at,
+      id: row.id,
+      parentName: row.parent_name,
+      email: row.email,
+      childName: row.child_name,
+      childAge: row.child_age || '',
+      phone: row.phone || '',
+      score: row.score,
+      band: row.band as Submission['band'],
+      bandLabel: row.band_label,
+      bandDescription: row.band_description,
+      primaryInstrument: row.primary_instrument,
+      secondaryInstruments: row.secondary_instruments || [],
+      actionPlan: row.action_plan || [],
+      createdAt: row.created_at,
       source: 'Music Readiness Score',
       // Restore quiz answers from stored answers
       pitch: (answers?.pitch as string) || '',
@@ -156,7 +160,7 @@ export async function getSubmissionFromDb(id: string): Promise<Submission | null
       instrumentsAtHome: (answers?.instrumentsAtHome as string[]) || [],
     };
   } catch (err) {
-    console.error("Failed to fetch submission from database:", err);
+    console.error("Failed to fetch submission:", err);
     return null;
   }
 }

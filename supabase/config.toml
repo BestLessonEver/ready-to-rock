@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.send-partial-digest]
 verify_jwt = false
+
+[functions.get-submission]
+verify_jwt = false
