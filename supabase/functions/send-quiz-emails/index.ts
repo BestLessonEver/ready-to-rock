@@ -231,7 +231,7 @@ function generateParentEmailHtml(submission: QuizSubmission, resultsUrl: string,
         </div>
 
         <!-- Musical Superpower Badge -->
-        <div style="background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); padding: 16px; border-radius: 12px; margin-bottom: 16px;">
+        <div style="background: linear-gradient(135deg, #d4a017 0%, #f59e0b 100%); padding: 16px; border-radius: 12px; margin-bottom: 16px;">
           <table cellpadding="0" cellspacing="0" border="0">
             <tr>
               <td style="vertical-align: middle; padding-right: 12px;">
@@ -287,7 +287,7 @@ function generateParentEmailHtml(submission: QuizSubmission, resultsUrl: string,
       
       <p style="font-size: 16px; color: #374151;">Hi ${sanitizeForHtml(submission.parentName)},</p>
       
-      <div style="background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); padding: 24px; border-radius: 12px; margin: 24px 0; text-align: center;">
+      <div style="background: linear-gradient(135deg, #d4a017 0%, #f59e0b 100%); padding: 24px; border-radius: 12px; margin: 24px 0; text-align: center;">
         <p style="color: rgba(255,255,255,0.9); margin: 0 0 8px 0; font-size: 14px;">Music Readiness Score</p>
         <p style="font-size: 48px; font-weight: bold; color: white; margin: 0;">${submission.score}</p>
         <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 14px;">out of 100</p>
@@ -301,7 +301,7 @@ function generateParentEmailHtml(submission: QuizSubmission, resultsUrl: string,
       <div style="background: #eff6ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
         <div style="margin-bottom: 8px;">
           <span style="font-size: 24px;">${primaryEmoji}</span>
-          <span style="background: #3b82f6; color: white; font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 4px; margin-left: 8px;">TOP PICK</span>
+          <span style="background: #d4a017; color: white; font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 4px; margin-left: 8px;">TOP PICK</span>
         </div>
         <h2 style="color: #1e40af; margin-top: 8px; margin-bottom: 8px;">Best-Fit Instrument: ${sanitizeForHtml(submission.primaryInstrument)}</h2>
         <p style="color: #374151; margin: 0;">Also consider: ${submission.secondaryInstruments.map(i => sanitizeForHtml(i)).join(", ")}</p>
@@ -316,11 +316,11 @@ function generateParentEmailHtml(submission: QuizSubmission, resultsUrl: string,
         </ul>
       </div>
 
-      <div style="background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); padding: 24px; border-radius: 12px; margin: 32px 0; text-align: center;">
+      <div style="background: linear-gradient(135deg, #d4a017 0%, #f59e0b 100%); padding: 24px; border-radius: 12px; margin: 32px 0; text-align: center;">
         <h2 style="color: white; margin-top: 0;">Ready to Get Started?</h2>
         <p style="color: rgba(255,255,255,0.9); margin-bottom: 16px;">Book a free trial lesson with Best Lesson Ever!</p>
         <div style="display: flex; flex-direction: column; gap: 12px; align-items: center;">
-          <a href="tel:2819404101" style="display: inline-block; background: white; color: #3b82f6; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; width: 280px; box-sizing: border-box;">📞 Call (281)940-4101</a>
+          <a href="tel:2819404101" style="display: inline-block; background: white; color: #d4a017; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; width: 280px; box-sizing: border-box;">📞 Call (281)940-4101</a>
           <a href="${bookingUrl}" style="display: inline-block; background: transparent; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; border: 2px solid white; width: 280px; box-sizing: border-box;">📅 Self-Book Your Favorite Timeslot</a>
         </div>
       </div>
@@ -329,7 +329,7 @@ function generateParentEmailHtml(submission: QuizSubmission, resultsUrl: string,
         <p style="color: #6b7280; font-size: 14px; margin: 0;">
           <strong>Best Lesson Ever!</strong><br>
           Student-focused music lessons that actually stick.<br>
-          <a href="https://bestlessonever.com/friendswood" style="color: #3b82f6;">bestlessonever.com/friendswood</a>
+          <a href="https://bestlessonever.com/friendswood" style="color: #d4a017;">bestlessonever.com/friendswood</a>
         </p>
       </div>
     </div>
@@ -388,7 +388,7 @@ const handler = async (req: Request): Promise<Response> => {
         : sampleSubmission;
       const baseUrl = "https://ddzzdwzxpssittevvpdi.lovable.app";
       const resultsUrl = `${baseUrl}/results/${submission.id}`;
-      const bookingUrl = "https://bestlessonever.com/book";
+      const bookingUrl = "https://bestlessonever.opus1.io/w/freetrial";
       const formattedDate = new Date(submission.createdAt).toLocaleString("en-US", {
         dateStyle: "medium",
         timeStyle: "short",
@@ -423,7 +423,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Use environment variable or default to production domain
     const baseUrl = Deno.env.get("APP_URL") || "https://ddzzdwzxpssittevvpdi.lovable.app";
     const resultsUrl = `${baseUrl}/results/${submission.id}`;
-    const bookingUrl = "https://bestlessonever.com/book";
+    const bookingUrl = "https://bestlessonever.opus1.io/w/freetrial";
     const formattedDate = new Date(submission.createdAt).toLocaleString("en-US", {
       dateStyle: "medium",
       timeStyle: "short",
